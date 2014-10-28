@@ -6,9 +6,7 @@
 
 class Bubble;
 
-bool collideEntity(Bubble& entity1, Bubble& entity2);
-
-bool collideWall(Bubble& entity, const sf::FloatRect& area);
+bool isCollideWithBubble(Bubble& entity1, Bubble& entity2);
 
 bool isCollideWithWall(Bubble& entity, const sf::FloatRect& area);
 

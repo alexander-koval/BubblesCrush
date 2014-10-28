@@ -16,11 +16,16 @@ public:
 
     virtual void collide(Physical &target1, Physical &target2) {}
 
+    virtual bool isDead(void) const;
+
+    virtual void setDead(bool value);
+
 protected:
     virtual void updateCurrent(sf::Time dt);
 
 private:
     sf::Vector2f m_velocity;
+    bool m_isDead;
 };
 
 #endif // ENTITY_H

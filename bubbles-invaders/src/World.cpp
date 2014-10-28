@@ -18,7 +18,7 @@ World::World(Screen::Context &context)
     , m_textureManager(context.m_textureManager) {
     float radius = static_cast<float>(MAX_RADIUS);
     worldArea = sf::FloatRect(0, -radius * 2, m_worldView.getSize().x,
-                              m_worldView.getSize().y + MAX_RADIUS * 2);
+                              m_worldView.getSize().y/* + MAX_RADIUS * 2*/);
     m_clock.restart();
     loadTextures();
     buildScene();
@@ -29,31 +29,34 @@ void World::update(sf::Time dt) {
         m_clock.restart();
         this->addBubble();
     }
-    std::list<Bubble*>::iterator it1 = m_physicList.begin();
-    std::list<Bubble*>::iterator it2 = m_physicList.begin();
-    const sf::Vector2f& size = m_worldView.getSize();
-    Bubble* bubble1 = nullptr;
-    Bubble* bubble2 = nullptr;
+
+    m_displayList.update(dt);
+
+    std::list<std::shared_ptr<Bubble>>::iterator it1 = m_physicList.begin();
+    std::list<std::shared_ptr<Bubble>>::iterator it2 = m_physicList.begin();
     while (it1 != m_physicList.end()) {
-        bubble1 = *it1;
+        std::shared_ptr<Bubble> ptr = *it1;
+        Bubble* bubble1 = ptr.get();
         if (isCollideWithWall(*bubble1, worldArea)) {
-            if (this->onCollideWithWall(*bubble1, worldArea)) {
-                std::list<Bubble*>::iterator temp = it1;
-                it1++;
-                m_physicList.erase(temp);
-                continue;
+            this->onCollideWithWall(bubble1, worldArea);
+            if (bubble1->isDead()) {
+                m_displayList.removeChild(*bubble1);
             }
         }
-        it1++;
-        it2 = it1;
+        it2 = ++it1;
         while (it2 != m_physicList.end()) {
-            bubble2 = *it2;
-            bubble1->collideWithBubble(bubble2);
+            std::shared_ptr<Bubble> ptr = *it2;
+            Bubble* bubble2 = ptr.get();
+            if (isCollideWithBubble(*bubble1, *bubble2)) {
+                this->onCollideWithBubble(bubble1, bubble2);
+            }
             it2++;
         }
     }
 
-    m_displayList.update(dt);
+    m_physicList.remove_if([](std::shared_ptr<Bubble> bubble) -> bool {
+        return bubble->isDead();
+    });
 }
 
 void World::draw(void) {
@@ -79,36 +82,68 @@ void World::addBubble(void) {
     uint8_t green = randomRange(0, 255);
     uint8_t blue = randomRange(0, 255);
     uint8_t alpha = randomRange(100, 200);
-    std::unique_ptr<Bubble> bubble(new Bubble(radius,
+    std::shared_ptr<Bubble> bubble(new Bubble(radius,
                                               sf::Color(red, green, blue, alpha)));
     int random = randomRange(0, m_worldView.getSize().x - radius * 2);
 
     bubble->setPosition(random, -radius);
     bubble->setVelocity(0, 3000 / radius);
-    m_physicList.push_back(bubble.get());
-    m_displayList.addChild(std::move(bubble));
+    m_physicList.push_back(bubble);
+    m_displayList.addChild(bubble);
 }
 
-bool World::onCollideWithWall(Bubble& entity, const sf::FloatRect& area) {
-    sf::Vector2f position = entity.getPosition();
-    sf::Vector2f velocity = entity.getVelocity();
-    if (position.x + entity.getRadius() > area.width) {
+void World::onCollideWithWall(Bubble* entity, const sf::FloatRect& area) {
+    sf::Vector2f position = entity->getPosition();
+    sf::Vector2f velocity = entity->getVelocity();
+    if (position.x + entity->getRadius() > area.width) {
         velocity.x = -velocity.x;
-        position.x = area.width - entity.getRadius();
-    } else if (position.x - entity.getRadius() < area.left) {
+        position.x = area.width - entity->getRadius();
+    } else if (position.x - entity->getRadius() < area.left) {
         velocity.x = -velocity.x;
-        position.x = entity.getRadius();
+        position.x = entity->getRadius();
     }
-    if (position.y + entity.getRadius() > area.height) {
+    if (position.y + entity->getRadius() > area.height) {
 //        velocity.y = -velocity.y;
 //        position.y = area.height - entity.getRadius();
-        m_displayList.removeChild(entity);
-        return true;
-    } else if (position.y - entity.getRadius() < area.top) {
+        entity->setDead(true);
+    } else if (position.y - entity->getRadius() < area.top) {
         velocity.y = -velocity.y;
-        position.y = entity.getRadius();
+        position.y = entity->getRadius();
     }
-    entity.setPosition(position);
-    entity.setVelocity(velocity);
-    return false;
+    entity->setPosition(position);
+    entity->setVelocity(velocity);
+}
+
+void World::onCollideWithBubble(Bubble* entity1, Bubble* entity2) {
+    sf::Vector2f delta = entity1->getPosition() - entity2->getPosition();
+    float dist = length(delta);
+    if (dist < entity1->getRadius() + entity2->getRadius()) {
+        float angle = atan2(delta.y, delta.x);
+        float sinf = sin(angle);
+        float cosf = cos(angle);
+        sf::Vector2f pos1(0.f, 0.f);
+        sf::Vector2f pos2(rotate(delta.x, delta.y, sinf, cosf, true));
+        sf::Vector2f vel1(rotate(entity1->getVelocity().x,
+                                 entity1->getVelocity().y, sinf, cosf, true));
+        sf::Vector2f vel2(rotate(entity2->getVelocity().x,
+                                 entity2->getVelocity().y, sinf, cosf, true));
+
+        float total = vel1.x - vel2.x;
+        vel1.x = vel2.x;
+        vel2.x = total + vel1.x;
+        float absolute = fabs(vel1.x) + fabs(vel2.x);
+        float overlap = (entity1->getRadius() + entity2->getRadius()) - fabs(pos1.x - pos2.x);
+        pos1.x += vel1.x / absolute * overlap;
+
+        sf::Vector2f pos1F = rotate(pos1.x, pos1.y, sinf, cosf, false);
+
+        entity1->setPosition(entity1->getPosition().x + pos1F.x,
+                            entity1->getPosition().y + pos1F.y);
+
+        sf::Vector2f vel1F = rotate(vel1.x, vel1.y, sinf, cosf, false);
+        sf::Vector2f vel2F = rotate(vel2.x, vel2.y, sinf, cosf, false);
+
+        entity1->setVelocity(vel1F.x, vel1F.y);
+        entity2->setVelocity(vel2F.x, vel2F.y);
+    }
 }

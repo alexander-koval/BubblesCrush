@@ -13,10 +13,6 @@ public:
 
     float getRadius(void) const;
 
-    void collideWithWall(const sf::FloatRect& area);
-
-    void collideWithBubble(Bubble* bubble);
-
 protected:
     virtual void updateCurrent(sf::Time dt);
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;

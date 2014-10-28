@@ -10,7 +10,7 @@
 
 class DisplayObject : public sf::Transformable, public sf::Drawable, public sf::NonCopyable {
 public:
-    typedef std::unique_ptr<DisplayObject> Ptr;
+    typedef std::shared_ptr<DisplayObject> Ptr;
 
     explicit DisplayObject(void);
 

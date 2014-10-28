@@ -25,11 +25,3 @@ void Bubble::updateCurrent(sf::Time dt) {
 void Bubble::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(m_shape, states);
 }
-
-void Bubble::collideWithWall(const sf::FloatRect& area) {
-    collideWall(*this, area);
-}
-
-void Bubble::collideWithBubble(Bubble *bubble) {
-    collideEntity(*this, *bubble);
-}

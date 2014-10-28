@@ -25,8 +25,8 @@ private:
     void loadTextures(void);
     void buildScene(void);
     void addBubble(void);
-    bool onCollideWithWall(Bubble& entity, const sf::FloatRect &area);
-
+    void onCollideWithWall(Bubble* entity, const sf::FloatRect &area);
+    void onCollideWithBubble(Bubble* entity1, Bubble* entity2);
 private:
 
 
@@ -37,9 +37,7 @@ private:
     sf::RenderTarget& m_target;
     FontManager& m_fontManager;
     TextureManager& m_textureManager;
-//    std::list<std::unique_ptr<Bubble>> m_physicList;
-
-    std::list<Bubble*> m_physicList;
+    std::list<std::shared_ptr<Bubble>> m_physicList;
 };
 
 #endif // WORLD_H

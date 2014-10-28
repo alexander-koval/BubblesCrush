@@ -48,7 +48,6 @@ void Application::run(void) {
     }
 }
 
-
 void Application::processInput(void) {
     sf::Event event;
     while (m_window.pollEvent(event)) {
