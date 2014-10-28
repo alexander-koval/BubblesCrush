@@ -18,6 +18,14 @@ float Bubble::getRadius(void) const {
     return m_shape.getRadius();
 }
 
+sf::FloatRect Bubble::getLocalBounds(void) const {
+    return m_shape.getLocalBounds();
+}
+
+sf::FloatRect Bubble::getGlobalBounds(void) const {
+    return getTransform().transformRect(m_shape.getGlobalBounds());
+}
+
 void Bubble::updateCurrent(sf::Time dt) {
     Entity::updateCurrent(dt);
 }

@@ -3,7 +3,9 @@
 #include "Bubble.h"
 #include "Utils.h"
 #include "SFML/Graphics/RenderWindow.hpp"
+#include "SFML/Window/Mouse.hpp"
 #include "CollisionUtils.h"
+#include "EventDispatcher.h"
 #include <iostream>
 #include <algorithm>
 
@@ -15,17 +17,21 @@ World::World(Screen::Context &context)
     , m_displayList()
     , m_target(context.m_window)
     , m_fontManager(context.m_fontManager)
-    , m_textureManager(context.m_textureManager) {
+    , m_textureManager(context.m_textureManager)
+    , m_eventDispatcher(context.m_eventDispatcher) {
     float radius = static_cast<float>(MAX_RADIUS);
     worldArea = sf::FloatRect(0, -radius * 2, m_worldView.getSize().x,
                               m_worldView.getSize().y/* + MAX_RADIUS * 2*/);
+    m_onMousePressed = [this] (sf::Event& event) {
+        this->onMousePressed(event);
+    };
     m_clock.restart();
     loadTextures();
     buildScene();
 }
 
 void World::update(sf::Time dt) {
-    if (m_clock.getElapsedTime().asMilliseconds() > 1000) {
+    if (m_clock.getElapsedTime().asMilliseconds() > 500) {
         m_clock.restart();
         this->addBubble();
     }
@@ -40,7 +46,7 @@ void World::update(sf::Time dt) {
         if (isCollideWithWall(*bubble1, worldArea)) {
             this->onCollideWithWall(bubble1, worldArea);
             if (bubble1->isDead()) {
-                m_displayList.removeChild(*bubble1);
+                m_displayList.removeChild(ptr);
             }
         }
         it2 = ++it1;
@@ -74,6 +80,9 @@ void World::buildScene(void) {
     std::unique_ptr<DisplayObject> backgroundSprite(new Sprite(backgroundTexture));
 
     m_displayList.addChild(std::move(backgroundSprite));
+
+    m_eventDispatcher.addEventListener(sf::Event::EventType::MouseButtonPressed,
+                                       m_onMousePressed);
 }
 
 void World::addBubble(void) {
@@ -87,9 +96,28 @@ void World::addBubble(void) {
     int random = randomRange(0, m_worldView.getSize().x - radius * 2);
 
     bubble->setPosition(random, -radius);
-    bubble->setVelocity(0, 3000 / radius);
+    bubble->setVelocity(0, 4000 / radius);
     m_physicList.push_back(bubble);
     m_displayList.addChild(bubble);
+}
+
+void World::onMousePressed(sf::Event &event) {
+    if (event.mouseButton.button == sf::Mouse::Left) {
+        auto find = std::find_if(m_physicList.begin(), m_physicList.end(),
+                                 [&] (std::shared_ptr<Bubble>& bubble) {
+                sf::FloatRect rect = bubble->getGlobalBounds();
+                if (rect.contains(sf::Vector2f(event.mouseButton.x,
+                                               event.mouseButton.y))) {
+                    m_displayList.removeChild(bubble);
+                    bubble->setDead(true);
+                    return true;
+                }
+                return false;
+            });
+        if (find != m_physicList.end()) {
+            m_physicList.erase(find);
+        }
+    }
 }
 
 void World::onCollideWithWall(Bubble* entity, const sf::FloatRect& area) {

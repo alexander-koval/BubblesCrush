@@ -9,6 +9,7 @@ namespace sf {
 class RenderWindow;
 }
 
+class EventDispatcher;
 class ScreenManager;
 class Screen {
 public:
@@ -17,11 +18,13 @@ public:
     struct Context {
         Context(sf::RenderWindow& m_window,
                 ScreenManager& manager,
+                EventDispatcher& eventDispatcher,
                 TextureManager& textures,
                 FontManager& fonts);
         sf::RenderWindow& m_window;
         ScreenManager& m_screenManager;
         TextureManager& m_textureManager;
+        EventDispatcher& m_eventDispatcher;
         FontManager& m_fontManager;
     };
 

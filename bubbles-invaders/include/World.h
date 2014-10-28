@@ -13,6 +13,9 @@
 #include "Bubble.h"
 #include <list>
 
+namespace sf {
+class Event;
+}
 class World : public sf::NonCopyable {
 public:
     explicit World(Screen::Context& context);
@@ -25,6 +28,7 @@ private:
     void loadTextures(void);
     void buildScene(void);
     void addBubble(void);
+    void onMousePressed(sf::Event& event);
     void onCollideWithWall(Bubble* entity, const sf::FloatRect &area);
     void onCollideWithBubble(Bubble* entity1, Bubble* entity2);
 private:
@@ -34,10 +38,12 @@ private:
     sf::Clock m_clock;
     sf::View m_worldView;
     DisplayObject m_displayList;
-    sf::RenderTarget& m_target;
+    sf::RenderWindow& m_target;
     FontManager& m_fontManager;
     TextureManager& m_textureManager;
+    EventDispatcher& m_eventDispatcher;
     std::list<std::shared_ptr<Bubble>> m_physicList;
+    std::function<void(sf::Event& event)> m_onMousePressed;
 };
 
 #endif // WORLD_H

@@ -16,13 +16,19 @@ public:
 
     void addChild(Ptr child);
 
+    Ptr removeChild(const Ptr& child);
+
     Ptr removeChild(const DisplayObject& child);
 
     void update(sf::Time dt);
 
     void removeFromParent(void);
 
-    DisplayObject* getParent(void) { return m_parent; }
+    DisplayObject* getParent(void);
+
+    virtual sf::FloatRect getLocalBounds(void) const;
+
+    virtual sf::FloatRect getGlobalBounds(void) const;
 
 protected:
     virtual void updateCurrent(sf::Time dt);

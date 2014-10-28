@@ -5,6 +5,7 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Graphics/Text.hpp"
 #include "ResourceManager.h"
+#include "EventDispatcher.h"
 #include "ScreenManager.h"
 #include "Resources.h"
 
@@ -25,6 +26,7 @@ private:
 private:
     static const size_t s_FPS;
     static const sf::Time s_timePerFrame;
+    EventDispatcher m_eventDispatcher;
     sf::RenderWindow m_window;
     ScreenManager m_screenManager;
     TextureManager m_textureManager;

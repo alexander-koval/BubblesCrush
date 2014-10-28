@@ -13,7 +13,11 @@ Application::Application()
     : m_window(sf::VideoMode(768, 1024),
                "Bubbles Invaders",
                sf::Style::Close)
-    , m_screenManager(Screen::Context(m_window, m_screenManager, m_textureManager, m_fontManager)) {
+    , m_screenManager(Screen::Context(m_window,
+                                      m_screenManager,
+                                      m_eventDispatcher,
+                                      m_textureManager,
+                                      m_fontManager)) {
     m_window.setKeyRepeatEnabled(false);
     m_window.setFramerateLimit(s_FPS);
     m_fontManager.load(Fonts::ID::Main, "Media/Sansation.ttf");
@@ -53,6 +57,12 @@ void Application::processInput(void) {
     while (m_window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             m_window.close();
+        }
+        if (event.type == sf::Event::TouchBegan) {
+            std::cout << "TOCH" << std::endl;
+        }
+        if (event.type == sf::Event::MouseButtonPressed) {
+            m_eventDispatcher.dispatchEvent(event);
         }
     }
 }

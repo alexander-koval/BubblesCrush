@@ -12,6 +12,10 @@ void DisplayObject::addChild(Ptr child) {
     m_children.push_back(std::move(child));
 }
 
+DisplayObject::Ptr DisplayObject::removeChild(const Ptr &child) {
+    return this->removeChild(*child.get());
+}
+
 DisplayObject::Ptr DisplayObject::removeChild(const DisplayObject &child) {
     auto found = std::find_if(m_children.begin(), m_children.end(),
                               [&] (Ptr& p) -> bool {
@@ -32,6 +36,19 @@ void DisplayObject::update(sf::Time dt) {
 void DisplayObject::removeFromParent(void) {
     assert(m_parent != nullptr);
     m_parent->removeChild(*this);
+}
+
+DisplayObject* DisplayObject::getParent(void) {
+    assert(m_parent != nullptr);
+    return m_parent;
+}
+
+sf::FloatRect DisplayObject::getLocalBounds(void) const {
+    return sf::FloatRect();
+}
+
+sf::FloatRect DisplayObject::getGlobalBounds(void) const {
+    return sf::FloatRect();
 }
 
 void DisplayObject::updateCurrent(sf::Time dt) {

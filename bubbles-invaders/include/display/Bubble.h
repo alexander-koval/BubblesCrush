@@ -13,6 +13,10 @@ public:
 
     float getRadius(void) const;
 
+    sf::FloatRect getLocalBounds(void) const;
+
+    sf::FloatRect getGlobalBounds(void) const;
+
 protected:
     virtual void updateCurrent(sf::Time dt);
     virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;

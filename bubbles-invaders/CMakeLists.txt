@@ -6,9 +6,11 @@ file(GLOB bubbles_invaders_source-files
     "include/display/*.h"
     "include/display/*.inl"
     "include/utils/*.h"
+    "include/events/*.h"
     "src/screen/*.cpp"
     "src/display/*.cpp"
     "src/utils/*.cpp"
+    "src/events/*.cpp"
     "src/*.cpp"
 )
 
@@ -17,6 +19,7 @@ include_directories(
     include/screen
     include/display
     include/utils
+    include/events
 )
 
 add_executable(bubbles-invaders ${bubbles_invaders_source-files})
