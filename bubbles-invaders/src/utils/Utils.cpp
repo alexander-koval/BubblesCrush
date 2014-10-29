@@ -30,6 +30,13 @@ float deg2rad(float degree) {
     return M_PI / 180.f * degree;
 }
 
+float randomRange(float min, float max) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> distr(min, max);
+    return distr(gen);
+}
+
 int randomRange(int min, int max) {
     std::random_device rd;
     std::mt19937 gen(rd());

@@ -19,11 +19,13 @@ float rad2deg(float radian);
 
 float deg2rad(float degree);
 
+float randomRange(float min, float max);
+
 int randomRange(int min, int max);
 
-float			length(sf::Vector2f vector);
+float length(sf::Vector2f vector);
 
-sf::Vector2f	unitVector(sf::Vector2f vector);
+sf::Vector2f unitVector(sf::Vector2f vector);
 
 
 #endif // UTILS_H

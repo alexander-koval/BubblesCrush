@@ -3,7 +3,6 @@
 GameScreen::GameScreen(Context context)
     : Screen(context)
     , m_world(context) {
-
 }
 
 void GameScreen::draw(void) {

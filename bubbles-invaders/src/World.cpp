@@ -15,13 +15,16 @@ static const size_t MAX_RADIUS = 40;
 World::World(Screen::Context &context)
     : m_worldView(context.m_window.getDefaultView())
     , m_displayList()
-    , m_target(context.m_window)
+    , m_window(context.m_window)
+    , m_sceneTexture()
     , m_fontManager(context.m_fontManager)
     , m_textureManager(context.m_textureManager)
-    , m_eventDispatcher(context.m_eventDispatcher) {
+    , m_eventDispatcher(context.m_eventDispatcher)
+    , m_particleSystem(m_window.getSize()) {
     float radius = static_cast<float>(MAX_RADIUS);
+    m_sceneTexture.create(m_window.getSize().x, m_window.getSize().y);
     worldArea = sf::FloatRect(0, -radius * 2, m_worldView.getSize().x,
-                              m_worldView.getSize().y/* + MAX_RADIUS * 2*/);
+                              m_worldView.getSize().y + MAX_RADIUS * 2);
     m_onMousePressed = [this] (sf::Event& event) {
         this->onMousePressed(event);
     };
@@ -37,7 +40,7 @@ void World::update(sf::Time dt) {
     }
 
     m_displayList.update(dt);
-
+    m_particleSystem.update(dt);
     std::list<std::shared_ptr<Bubble>>::iterator it1 = m_physicList.begin();
     std::list<std::shared_ptr<Bubble>>::iterator it2 = m_physicList.begin();
     while (it1 != m_physicList.end()) {
@@ -66,19 +69,28 @@ void World::update(sf::Time dt) {
 }
 
 void World::draw(void) {
-    m_target.setView(m_worldView);
-    m_target.draw(m_displayList);
+    if (PostEffect::isSupported()) {
+        m_sceneTexture.clear(sf::Color::Transparent);
+        m_sceneTexture.setView(m_worldView);
+        m_sceneTexture.draw(m_displayList);
+        m_sceneTexture.draw(m_particleSystem);
+        m_sceneTexture.display();
+        m_bloomEffect.apply(m_sceneTexture, m_window);
+    } else {
+        m_window.setView(m_worldView);
+        m_window.draw(m_displayList);
+        m_window.draw(m_particleSystem);
+    }
 }
 
 void World::loadTextures(void) {
     m_textureManager.load(Textures::ID::Background, "Media/Textures/bg.png");
+    m_textureManager.load(Textures::ID::Particle, "Media/Textures/Particle.png");
 }
 
 void World::buildScene(void) {
     sf::Texture& backgroundTexture = m_textureManager.get(Textures::ID::Background);
-
     std::unique_ptr<DisplayObject> backgroundSprite(new Sprite(backgroundTexture));
-
     m_displayList.addChild(std::move(backgroundSprite));
 
     m_eventDispatcher.addEventListener(sf::Event::EventType::MouseButtonPressed,
@@ -86,14 +98,17 @@ void World::buildScene(void) {
 }
 
 void World::addBubble(void) {
-    int radius = randomRange(10, MAX_RADIUS);
+    int radius = randomRange(20, MAX_RADIUS);
     uint8_t red = randomRange(0, 255);
     uint8_t green = randomRange(0, 255);
-    uint8_t blue = randomRange(0, 255);
+    uint8_t blue = randomRange(0, 200);
     uint8_t alpha = randomRange(100, 200);
     std::shared_ptr<Bubble> bubble(new Bubble(radius,
                                               sf::Color(red, green, blue, alpha)));
-    int random = randomRange(0, m_worldView.getSize().x - radius * 2);
+//    std::shared_ptr<Bubble> bubble(new Bubble(radius,
+//                                              sf::Color(255, 255, 0, 255)));
+
+    int random = randomRange(0, static_cast<int>(m_worldView.getSize().x - radius * 2));
 
     bubble->setPosition(random, -radius);
     bubble->setVelocity(0, 4000 / radius);
@@ -110,6 +125,10 @@ void World::onMousePressed(sf::Event &event) {
                                                event.mouseButton.y))) {
                     m_displayList.removeChild(bubble);
                     bubble->setDead(true);
+                    m_particleSystem.setPosition(event.mouseButton.x,
+                                                 event.mouseButton.y);
+                    m_particleSystem.setColor(bubble->getColor());
+                    m_particleSystem.populate(bubble->getRadius(), sf::seconds(2.0f));
                     return true;
                 }
                 return false;

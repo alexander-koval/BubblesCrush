@@ -6,11 +6,14 @@
 #include "SFML/System/Clock.hpp"
 #include "SFML/Graphics/View.hpp"
 #include "SFML/Graphics/Texture.hpp"
+#include "BloomEffect.h"
 #include "DisplayObject.h"
 #include "ResourceManager.h"
+#include "ParticleSystem.h"
 #include "Resources.h"
 #include "Screen.h"
 #include "Bubble.h"
+#include <array>
 #include <list>
 
 namespace sf {
@@ -37,11 +40,14 @@ private:
 private:
     sf::Clock m_clock;
     sf::View m_worldView;
+    BloomEffect m_bloomEffect;
     DisplayObject m_displayList;
-    sf::RenderWindow& m_target;
+    sf::RenderWindow& m_window;
+    sf::RenderTexture m_sceneTexture;
     FontManager& m_fontManager;
     TextureManager& m_textureManager;
     EventDispatcher& m_eventDispatcher;
+    ParticleSystem m_particleSystem;
     std::list<std::shared_ptr<Bubble>> m_physicList;
     std::function<void(sf::Event& event)> m_onMousePressed;
 };

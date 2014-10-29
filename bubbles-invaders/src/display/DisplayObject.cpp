@@ -28,6 +28,12 @@ DisplayObject::Ptr DisplayObject::removeChild(const DisplayObject &child) {
     return result;
 }
 
+DisplayObject::Ptr& DisplayObject::getChildAt(int index) {
+    Ptr& child = m_children[index];
+    assert(child != nullptr);
+    return child;
+}
+
 void DisplayObject::update(sf::Time dt) {
     this->updateCurrent(dt);
     this->updateChildren(dt);
@@ -41,6 +47,19 @@ void DisplayObject::removeFromParent(void) {
 DisplayObject* DisplayObject::getParent(void) {
     assert(m_parent != nullptr);
     return m_parent;
+}
+
+sf::Vector2f DisplayObject::getWorldPosition() const {
+    return getWorldTransform() * sf::Vector2f();
+}
+
+sf::Transform DisplayObject::getWorldTransform() const {
+    sf::Transform transform = sf::Transform::Identity;
+
+    for (const DisplayObject* object = this; object != nullptr; object = object->m_parent)
+        transform = object->getTransform() * transform;
+
+    return transform;
 }
 
 sf::FloatRect DisplayObject::getLocalBounds(void) const {

@@ -19,6 +19,7 @@ Application::Application()
                                       m_textureManager,
                                       m_fontManager)) {
     m_window.setKeyRepeatEnabled(false);
+    m_window.setVerticalSyncEnabled(true);
     m_window.setFramerateLimit(s_FPS);
     m_fontManager.load(Fonts::ID::Main, "Media/Sansation.ttf");
     m_stats.setFont(m_fontManager.get(Fonts::ID::Main));

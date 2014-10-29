@@ -9,7 +9,17 @@ class Shader;
 
 namespace Textures {
 enum class ID {
-    Background
+    Background,
+    Particle
+};
+}
+
+namespace Shaders {
+enum ID {
+    BrightnessPass,
+    DownSamplePass,
+    GaussianBlurPass,
+    AddPass,
 };
 }
 
@@ -24,5 +34,6 @@ class ResourceManager;
 
 typedef ResourceManager<sf::Font, Fonts::ID> FontManager;
 typedef ResourceManager<sf::Texture, Textures::ID> TextureManager;
+typedef ResourceManager<sf::Shader, Shaders::ID> ShaderManager;
 
 #endif // RESOURCES_H

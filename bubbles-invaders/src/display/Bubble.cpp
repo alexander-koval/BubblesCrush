@@ -18,6 +18,10 @@ float Bubble::getRadius(void) const {
     return m_shape.getRadius();
 }
 
+const sf::Color& Bubble::getColor(void) const {
+    return m_shape.getFillColor();
+}
+
 sf::FloatRect Bubble::getLocalBounds(void) const {
     return m_shape.getLocalBounds();
 }

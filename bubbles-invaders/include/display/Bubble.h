@@ -13,6 +13,8 @@ public:
 
     float getRadius(void) const;
 
+    const sf::Color& getColor(void) const;
+
     sf::FloatRect getLocalBounds(void) const;
 
     sf::FloatRect getGlobalBounds(void) const;
