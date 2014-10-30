@@ -7,6 +7,7 @@
 class Sprite : public DisplayObject {
 public:
     explicit Sprite(const sf::Texture& texture);
+
     explicit Sprite(const sf::Texture& texture, const sf::IntRect& textureRect);
 
 private:

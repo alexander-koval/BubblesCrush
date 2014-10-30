@@ -13,10 +13,11 @@ namespace sf {
 }
 
 namespace Screens {
-    enum class ID {
-        NONE,
-        GAME
-    };
+enum class ID {
+    None,
+    Menu,
+    Game
+};
 }
 
 class ScreenManager : public sf::NonCopyable {

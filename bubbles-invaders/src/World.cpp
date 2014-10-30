@@ -6,6 +6,8 @@
 #include "SFML/Window/Mouse.hpp"
 #include "CollisionUtils.h"
 #include "EventDispatcher.h"
+#include "ParticleSystems.h"
+#include "BubblesConfig.h"
 #include <iostream>
 #include <algorithm>
 
@@ -13,14 +15,17 @@ sf::FloatRect worldArea;
 static const size_t MAX_RADIUS = 40;
 
 World::World(Screen::Context &context)
-    : m_worldView(context.m_window.getDefaultView())
+    : m_score()
+    , m_worldView(context.m_window.getDefaultView())
+    , m_scoreCount(0)
     , m_displayList()
     , m_window(context.m_window)
     , m_sceneTexture()
     , m_fontManager(context.m_fontManager)
     , m_textureManager(context.m_textureManager)
     , m_eventDispatcher(context.m_eventDispatcher)
-    , m_particleSystem(m_window.getSize()) {
+    , m_particleSystem(std::unique_ptr<ParticleSystem>(
+                           new ParticleExplosion(m_window.getSize()))) {
     float radius = static_cast<float>(MAX_RADIUS);
     m_sceneTexture.create(m_window.getSize().x, m_window.getSize().y);
     worldArea = sf::FloatRect(0, -radius * 4, m_worldView.getSize().x,
@@ -30,10 +35,10 @@ World::World(Screen::Context &context)
     };
     m_clock.restart();
     loadTextures();
-    buildScene();
+    initialize();
     sf::Texture& texture = m_textureManager.get(Textures::ID::Particle);
-    m_particleSystem.setParticleSize(texture.getSize());
-    m_particleSystem.setTexture(&texture);
+    m_particleSystem->setParticleSize(texture.getSize());
+    m_particleSystem->setTexture(&texture);
 }
 
 void World::update(sf::Time dt) {
@@ -43,7 +48,7 @@ void World::update(sf::Time dt) {
     }
 
     m_displayList.update(dt);
-    m_particleSystem.update(dt);
+    m_particleSystem->update(dt);
     std::list<std::shared_ptr<Bubble>>::iterator it1 = m_physicList.begin();
     std::list<std::shared_ptr<Bubble>>::iterator it2 = m_physicList.begin();
     while (it1 != m_physicList.end()) {
@@ -76,22 +81,28 @@ void World::draw(void) {
         m_sceneTexture.clear(sf::Color::Transparent);
         m_sceneTexture.setView(m_worldView);
         m_sceneTexture.draw(m_displayList);
-        m_sceneTexture.draw(m_particleSystem);
+        m_sceneTexture.draw(*m_particleSystem);
+        m_sceneTexture.draw(m_score);
         m_sceneTexture.display();
         m_bloomEffect.apply(m_sceneTexture, m_window);
     } else {
         m_window.setView(m_worldView);
         m_window.draw(m_displayList);
-        m_window.draw(m_particleSystem);
+        m_window.draw(*m_particleSystem);
+        m_window.draw(m_score);
     }
 }
 
 void World::loadTextures(void) {
-    m_textureManager.load(Textures::ID::Background, "Media/Textures/bg.png");
     m_textureManager.load(Textures::ID::Particle, "Media/Textures/Particle.png");
 }
 
-void World::buildScene(void) {
+void World::initialize(void) {
+    m_score.setStyle(sf::Text::Style::Italic);
+    m_score.setFont(m_fontManager.get(Fonts::ID::Main));
+    m_score.setString("SCORE: 0");
+    centerOrigin(m_score);
+    m_score.setPosition(m_window.getSize().x / 2, m_score.getLocalBounds().height + 5);
     sf::Texture& backgroundTexture = m_textureManager.get(Textures::ID::Background);
     std::unique_ptr<DisplayObject> backgroundSprite(new Sprite(backgroundTexture));
     m_displayList.addChild(std::move(backgroundSprite));
@@ -101,7 +112,7 @@ void World::buildScene(void) {
 }
 
 void World::addBubble(void) {
-    int radius = randomRange(20, MAX_RADIUS);
+    int radius = randomRange(Bubbles::MIN_RADIUS, Bubbles::MAX_RADIUS);
     uint8_t red = randomRange(0, 255);
     uint8_t green = randomRange(0, 255);
     uint8_t blue = randomRange(0, 200);
@@ -111,10 +122,11 @@ void World::addBubble(void) {
 //    std::shared_ptr<Bubble> bubble(new Bubble(radius,
 //                                              sf::Color(255, 255, 0, 255)));
 
-    int random = randomRange(0, static_cast<int>(m_worldView.getSize().x - radius * 2));
+    int random = randomRange(0, static_cast<int>(m_worldView.getSize().x -
+                                                 radius * 2));
 
     bubble->setPosition(random, -radius * 2);
-    bubble->setVelocity(0, 4000 / radius);
+    bubble->setVelocity(0, Bubbles::getSpeed(radius));
     m_physicList.push_back(bubble);
     m_displayList.addChild(bubble);
 }
@@ -128,10 +140,12 @@ void World::onMousePressed(sf::Event &event) {
                                                event.mouseButton.y))) {
                     m_displayList.removeChild(bubble);
                     bubble->setDead(true);
-                    m_particleSystem.setPosition(event.mouseButton.x,
+                    m_scoreCount += Bubbles::getScore(bubble->getRadius());
+                    m_score.setString("SCORE: " + std::to_string(m_scoreCount));
+                    m_particleSystem->setPosition(event.mouseButton.x,
                                                  event.mouseButton.y);
-                    m_particleSystem.setColor(bubble->getColor());
-                    m_particleSystem.populate(bubble->getRadius(), sf::seconds(2.0f));
+                    m_particleSystem->setColor(bubble->getColor());
+                    m_particleSystem->populate(bubble->getRadius());
                     return true;
                 }
                 return false;

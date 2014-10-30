@@ -3,6 +3,7 @@
 #include "SFML/Window/ContextSettings.hpp"
 #include "SFML/System/Sleep.hpp"
 #include "GameScreen.h"
+#include "MenuScreen.h"
 #include "Screen.h"
 #include <iostream>
 
@@ -22,8 +23,9 @@ Application::Application()
     m_window.setVerticalSyncEnabled(true);
     m_window.setFramerateLimit(s_FPS);
     m_fontManager.load(Fonts::ID::Main, "Media/Sansation.ttf");
+    m_textureManager.load(Textures::ID::Background, "Media/Textures/bg.png");
     m_stats.setFont(m_fontManager.get(Fonts::ID::Main));
-    m_stats.setPosition(5.0f, 5.0f);
+    m_stats.setPosition(650, 5.0f);
     m_stats.setColor(sf::Color(255, 0, 0, 255));
     m_stats.setCharacterSize(20u);
     m_stats.setStyle(sf::Text::Style::Bold);
@@ -35,8 +37,7 @@ Application::Application()
 void Application::run(void) {
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
-
-    m_screenManager.setScreen(Screens::ID::GAME);
+    m_screenManager.setScreen(Screens::ID::Menu);
     while (m_window.isOpen()) {
         sf::Time dt = clock.restart();
         timeSinceLastUpdate += dt;
@@ -73,7 +74,7 @@ void Application::update(sf::Time dt) {
 }
 
 void Application::render(void) {
-    m_window.clear(sf::Color(190, 190, 190, 255));
+    m_window.clear();
     m_screenManager.draw();
     m_window.setView(m_window.getDefaultView());
     m_window.draw(m_stats);
@@ -92,5 +93,6 @@ void Application::updateStatistics(sf::Time dt) {
 }
 
 void Application::registerScreens(void) {
-    m_screenManager.addScreen<GameScreen>(Screens::ID::GAME);
+    m_screenManager.addScreen<MenuScreen>(Screens::ID::Menu);
+    m_screenManager.addScreen<GameScreen>(Screens::ID::Game);
 }

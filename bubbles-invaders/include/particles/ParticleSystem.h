@@ -16,6 +16,11 @@
 
 namespace Shape { enum { CIRCLE, SQUARE }; }
 
+struct Config {
+    sf::Time lifetime;
+    sf::Vector2f velocity;
+};
+
 struct Particle : public sf::Drawable {
     void update(sf::Time dt) {
         sf::Vector2f half = sf::Vector2f(size.x / 2.f,
@@ -62,25 +67,17 @@ class ParticleSystem : public sf::Drawable, public sf::NonCopyable {
 public:
     ParticleSystem(sf::Vector2u size);
 
-    ~ParticleSystem(void);
+    virtual ~ParticleSystem(void);
 
-    void populate(int particles, sf::Time lifetime);
+    virtual void populate(int particles);
 
-    void update(sf::Time dt);
+    virtual void update(sf::Time dt);
 
     void setCanvasSize(sf::Vector2u size) { m_size = size; }
 
     void setParticleSize(sf::Vector2u size) { m_particleSize = size; }
 
-//    void setDissolutionRate(sf::Uint8 rate) { m_dissolutionRate = rate; }
-
-//    void setDissolve(void) { m_dissolve = !m_dissolve; }
-
     void setDistribution(void) { m_shape = (m_shape + 1) % 2; }
-
-//    void setGravity(float x, float y) { m_gravity.x = x; m_gravity.y = y; }
-
-//    void setGravity(sf::Vector2f gravity) { m_gravity = gravity; }
 
     void setParticleSpeed(float speed) { m_speed = speed; }
 
@@ -94,7 +91,7 @@ public:
 
     void setTexture(sf::Texture* texture) { m_texture = texture; }
 
-//    const int getDissolutionRate(void) const { return m_dissolutionRate; }
+    void setLifetime(sf::Time time) { m_lifetime = time; }
 
     const int getNumberOfParticles(void) const { return m_particles.size(); }
 
@@ -103,16 +100,12 @@ public:
 private:
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
-//    void reset(std::size_t index);
-
-private:
-//    bool m_dissolve;
+protected:
     float m_speed;
     sf::Color m_color;
     sf::Texture* m_texture;
-//    sf::Uint8 m_dissolutionRate;
     sf::Uint8 m_shape;
-//    sf::Vector2f m_gravity;
+    sf::Time m_lifetime;
     sf::Vector2f m_startPos;
     sf::Vector2u m_size;
     sf::Vector2u m_particleSize;

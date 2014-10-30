@@ -23,8 +23,8 @@ public:
                 FontManager& fonts);
         sf::RenderWindow& m_window;
         ScreenManager& m_screenManager;
-        TextureManager& m_textureManager;
         EventDispatcher& m_eventDispatcher;
+        TextureManager& m_textureManager;
         FontManager& m_fontManager;
     };
 

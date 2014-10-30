@@ -3,8 +3,8 @@
 #include <cassert>
 
 ScreenManager::ScreenManager(Screen::Context context)
-    : m_current(Screens::ID::NONE)
-    , m_previous(Screens::ID::NONE)
+    : m_current(Screens::ID::None)
+    , m_previous(Screens::ID::None)
     , m_context(context) {
 
 }
@@ -23,7 +23,7 @@ void ScreenManager::draw(void) {
 }
 
 void ScreenManager::setScreen(Screens::ID screenID) {
-    if (m_current == Screens::ID::NONE) {
+    if (m_current == Screens::ID::None) {
         m_current = screenID;
         Screen::Ptr& screen = m_screens[m_current];
         screen->enter();
@@ -32,7 +32,11 @@ void ScreenManager::setScreen(Screens::ID screenID) {
         std::cout << "this object is already in the " << (uint32_t)screenID << " screen." << std::endl;
         return;
     } else {
-        std::cout << "screen " << (uint32_t)screenID << " cannot be used while in the " << (uint32_t)m_current << " state." << std::endl;
+        Screen::Ptr& screen = m_screens[m_current];
+        screen->exit();
+        m_previous = m_current;
+        m_current = screenID;
+        m_screens[m_current]->enter();
         return;
     }
 
