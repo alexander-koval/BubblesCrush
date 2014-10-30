@@ -23,7 +23,7 @@ World::World(Screen::Context &context)
     , m_particleSystem(m_window.getSize()) {
     float radius = static_cast<float>(MAX_RADIUS);
     m_sceneTexture.create(m_window.getSize().x, m_window.getSize().y);
-    worldArea = sf::FloatRect(0, -radius * 2, m_worldView.getSize().x,
+    worldArea = sf::FloatRect(0, -radius * 4, m_worldView.getSize().x,
                               m_worldView.getSize().y + MAX_RADIUS * 2);
     m_onMousePressed = [this] (sf::Event& event) {
         this->onMousePressed(event);
@@ -31,6 +31,9 @@ World::World(Screen::Context &context)
     m_clock.restart();
     loadTextures();
     buildScene();
+    sf::Texture& texture = m_textureManager.get(Textures::ID::Particle);
+    m_particleSystem.setParticleSize(texture.getSize());
+    m_particleSystem.setTexture(&texture);
 }
 
 void World::update(sf::Time dt) {
@@ -110,7 +113,7 @@ void World::addBubble(void) {
 
     int random = randomRange(0, static_cast<int>(m_worldView.getSize().x - radius * 2));
 
-    bubble->setPosition(random, -radius);
+    bubble->setPosition(random, -radius * 2);
     bubble->setVelocity(0, 4000 / radius);
     m_physicList.push_back(bubble);
     m_displayList.addChild(bubble);

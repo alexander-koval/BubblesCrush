@@ -5,12 +5,14 @@
 ParticleSystem::ParticleSystem(sf::Vector2u size)
     :
     //  m_dissolve(false),
-      m_speed(100.0f),
-      m_color(sf::Color(sf::Color::White)),
+      m_speed(100.0f)
+    , m_color(sf::Color(sf::Color::White))
+    , m_texture(nullptr)
     //  m_dissolutionRate(4),
-      m_shape(Shape::CIRCLE),
-    //  m_gravity(sf::Vector2f(0.0f,0.0f)),
-      m_size(size) {
+    , m_shape(Shape::CIRCLE)
+    //  m_gravity(sf::Vector2f(0.0f,0.0f))
+    , m_size(size)
+    , m_particleSize(1.f, 1.f)  {
       m_startPos = sf::Vector2f(static_cast<float>(size.x) / 2,
                                 static_cast<float>(size.y) / 2);
 }
@@ -31,6 +33,9 @@ void ParticleSystem::populate(int particles, sf::Time lifetime) {
         Ptr particle = Ptr(new Particle());
 //        particle->vertex.position.x = m_startPos.x;
 //        particle->vertex.position.y = m_startPos.y;
+//        particle->texture = m_texture;
+        particle->size = m_particleSize;
+        particle->texture = m_texture;
         particle->position = m_startPos;
         particle->lifetime = lifetime;
 
@@ -66,6 +71,8 @@ void ParticleSystem::update(sf::Time dt) {
         particle->position.x += particle->velocity.x * dt.asSeconds() * m_speed;
         particle->position.y += particle->velocity.y * dt.asSeconds() * m_speed;
         particle->lifetime -= dt;
+        float ratio = particle->lifetime.asSeconds() / 2.0f;
+        particle->color.a = static_cast<std::uint8_t>(255 * std::max(ratio, 0.f));
         particle->update(dt);
     });
 

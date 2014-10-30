@@ -7,6 +7,7 @@
 #include <iostream>
 #include "SFML/System/Time.hpp"
 #include "SFML/System/NonCopyable.hpp"
+#include "SFML/Graphics/Texture.hpp"
 #include "SFML/Graphics/Drawable.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/VertexArray.hpp"
@@ -17,9 +18,15 @@ namespace Shape { enum { CIRCLE, SQUARE }; }
 
 struct Particle : public sf::Drawable {
     void update(sf::Time dt) {
-        sf::Vector2f size(5, 5);
-        sf::Vector2f half = size / 2.f;
+        sf::Vector2f half = sf::Vector2f(size.x / 2.f,
+                                         size.y / 2.f);
         sf::Vector2f& pos = position;
+
+        vertices[0].texCoords = sf::Vector2f(0.f, 0.f);
+        vertices[1].texCoords = sf::Vector2f(size.x, 0.f);
+        vertices[2].texCoords = sf::Vector2f(0.f, size.y);
+        vertices[3].texCoords = sf::Vector2f(size.x, size.y);
+
         vertices[0].color = color;
         vertices[1].color = color;
         vertices[2].color = color;
@@ -36,14 +43,14 @@ struct Particle : public sf::Drawable {
     }
 
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const {
-//        target.draw(&vertex, 1, sf::Points, states);
+        states.texture = texture;
         target.draw(vertices, 4, sf::TrianglesStrip, states);
     }
 
-//    sf::Vertex vertex;
     sf::Color color;
     sf::Time lifetime;
-    sf::Vector2f texCoold;
+    sf::Texture* texture;
+    sf::Vector2u size;
     sf::Vector2f position;
     sf::Vector2f velocity;
     sf::Vertex vertices[4];
@@ -61,7 +68,9 @@ public:
 
     void update(sf::Time dt);
 
-    void setCanvasSize(sf::Vector2u newSize) { m_size = newSize; }
+    void setCanvasSize(sf::Vector2u size) { m_size = size; }
+
+    void setParticleSize(sf::Vector2u size) { m_particleSize = size; }
 
 //    void setDissolutionRate(sf::Uint8 rate) { m_dissolutionRate = rate; }
 
@@ -83,6 +92,8 @@ public:
 
     void setShape(sf::Uint8 shape) { m_shape = shape; }
 
+    void setTexture(sf::Texture* texture) { m_texture = texture; }
+
 //    const int getDissolutionRate(void) const { return m_dissolutionRate; }
 
     const int getNumberOfParticles(void) const { return m_particles.size(); }
@@ -98,11 +109,13 @@ private:
 //    bool m_dissolve;
     float m_speed;
     sf::Color m_color;
+    sf::Texture* m_texture;
 //    sf::Uint8 m_dissolutionRate;
     sf::Uint8 m_shape;
 //    sf::Vector2f m_gravity;
     sf::Vector2f m_startPos;
     sf::Vector2u m_size;
+    sf::Vector2u m_particleSize;
     sf::VertexArray m_vertices;
     std::deque<Ptr> m_particles;
 };
