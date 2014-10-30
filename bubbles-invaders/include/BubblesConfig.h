@@ -2,8 +2,8 @@
 #define BUBBLESCONFIG_H
 
 namespace Bubbles {
-    const float MIN_RADIUS = 10;
-    const float MAX_RADIUS = 40;
+    const float MIN_RADIUS = 20;
+    const float MAX_RADIUS = 60;
 
     const float MIN_SPEED = 50;
     const float MAX_SPEED = 400;

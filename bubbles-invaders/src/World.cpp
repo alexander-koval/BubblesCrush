@@ -104,7 +104,10 @@ void World::initialize(void) {
     centerOrigin(m_score);
     m_score.setPosition(m_window.getSize().x / 2, m_score.getLocalBounds().height + 5);
     sf::Texture& backgroundTexture = m_textureManager.get(Textures::ID::Background);
-    std::unique_ptr<DisplayObject> backgroundSprite(new Sprite(backgroundTexture));
+    std::unique_ptr<Sprite> backgroundSprite(new Sprite(backgroundTexture));
+    if (PostEffect::isSupported()) {
+        backgroundSprite->setColor(sf::Color(40, 40, 40, 255));
+    }
     m_displayList.addChild(std::move(backgroundSprite));
 
     m_eventDispatcher.addEventListener(sf::Event::EventType::MouseButtonPressed,
@@ -119,13 +122,11 @@ void World::addBubble(void) {
     uint8_t alpha = randomRange(100, 200);
     std::shared_ptr<Bubble> bubble(new Bubble(radius,
                                               sf::Color(red, green, blue, alpha)));
-//    std::shared_ptr<Bubble> bubble(new Bubble(radius,
-//                                              sf::Color(255, 255, 0, 255)));
 
     int random = randomRange(0, static_cast<int>(m_worldView.getSize().x -
                                                  radius * 2));
 
-    bubble->setPosition(random, -radius * 2);
+    bubble->setPosition(random, -radius);
     bubble->setVelocity(0, Bubbles::getSpeed(radius));
     m_physicList.push_back(bubble);
     m_displayList.addChild(bubble);
@@ -167,8 +168,6 @@ void World::onCollideWithWall(Bubble* entity, const sf::FloatRect& area) {
         position.x = entity->getRadius();
     }
     if (position.y + entity->getRadius() > area.height) {
-//        velocity.y = -velocity.y;
-//        position.y = area.height - entity.getRadius();
         entity->setDead(true);
     } else if (position.y - entity->getRadius() < area.top) {
         velocity.y = -velocity.y;
