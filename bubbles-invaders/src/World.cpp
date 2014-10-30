@@ -12,7 +12,6 @@
 #include <algorithm>
 
 sf::FloatRect worldArea;
-static const size_t MAX_RADIUS = 40;
 
 World::World(Screen::Context &context)
     : m_score()
@@ -26,10 +25,10 @@ World::World(Screen::Context &context)
     , m_eventDispatcher(context.m_eventDispatcher)
     , m_particleSystem(std::unique_ptr<ParticleSystem>(
                            new ParticleExplosion(m_window.getSize()))) {
-    float radius = static_cast<float>(MAX_RADIUS);
+    float radius = static_cast<float>(Bubbles::MAX_RADIUS);
     m_sceneTexture.create(m_window.getSize().x, m_window.getSize().y);
-    worldArea = sf::FloatRect(0, -radius * 4, m_worldView.getSize().x,
-                              m_worldView.getSize().y + MAX_RADIUS * 2);
+    worldArea = sf::FloatRect(0, -radius * 6, m_worldView.getSize().x,
+                              m_worldView.getSize().y + Bubbles::MAX_RADIUS * 2);
     m_onMousePressed = [this] (sf::Event& event) {
         this->onMousePressed(event);
     };
@@ -42,7 +41,7 @@ World::World(Screen::Context &context)
 }
 
 void World::update(sf::Time dt) {
-    if (m_clock.getElapsedTime().asMilliseconds() > 500) {
+    if (m_clock.getElapsedTime().asMilliseconds() > Bubbles::TIME) {
         m_clock.restart();
         this->addBubble();
     }
@@ -126,7 +125,7 @@ void World::addBubble(void) {
     int random = randomRange(0, static_cast<int>(m_worldView.getSize().x -
                                                  radius * 2));
 
-    bubble->setPosition(random, -radius);
+    bubble->setPosition(random, -5 * radius);
     bubble->setVelocity(0, Bubbles::getSpeed(radius));
     m_physicList.push_back(bubble);
     m_displayList.addChild(bubble);
