@@ -1,6 +1,5 @@
 #include "World.h"
 #include "Sprite.h"
-#include "Bubble.h"
 #include "Utils.h"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Window/Mouse.hpp"
@@ -8,8 +7,6 @@
 #include "EventDispatcher.h"
 #include "ParticleSystems.h"
 #include "BubblesConfig.h"
-#include <iostream>
-#include <algorithm>
 
 sf::FloatRect worldArea;
 
@@ -23,9 +20,11 @@ World::World(Screen::Context &context)
     , m_fontManager(context.m_fontManager)
     , m_textureManager(context.m_textureManager)
     , m_eventDispatcher(context.m_eventDispatcher)
+    , m_collisionManager(sf::FloatRect(0, -Bubbles::MAX_RADIUS * 6, m_worldView.getSize().x,
+                                       m_worldView.getSize().y + Bubbles::MAX_RADIUS * 2))
     , m_particleSystem(std::unique_ptr<ParticleSystem>(
                            new ParticleExplosion(m_window.getSize()))) {
-    float radius = static_cast<float>(Bubbles::MAX_RADIUS);
+    float radius = Bubbles::MAX_RADIUS;
     m_sceneTexture.create(m_window.getSize().x, m_window.getSize().y);
     worldArea = sf::FloatRect(0, -radius * 6, m_worldView.getSize().x,
                               m_worldView.getSize().y + Bubbles::MAX_RADIUS * 2);
@@ -38,6 +37,7 @@ World::World(Screen::Context &context)
     sf::Texture& texture = m_textureManager.get(Textures::ID::Particle);
     m_particleSystem->setParticleSize(texture.getSize());
     m_particleSystem->setTexture(&texture);
+    m_collisionManager.setCollisionListener(this);
 }
 
 void World::update(sf::Time dt) {
@@ -46,33 +46,14 @@ void World::update(sf::Time dt) {
         this->addBubble();
     }
 
+    m_collisionManager.update(dt);
     m_displayList.update(dt);
     m_particleSystem->update(dt);
-    std::list<std::shared_ptr<Bubble>>::iterator it1 = m_physicList.begin();
-    std::list<std::shared_ptr<Bubble>>::iterator it2 = m_physicList.begin();
-    while (it1 != m_physicList.end()) {
-        std::shared_ptr<Bubble> ptr = *it1;
-        Bubble* bubble1 = ptr.get();
-        if (isCollideWithWall(*bubble1, worldArea)) {
-            this->onCollideWithWall(bubble1, worldArea);
-            if (bubble1->isDead()) {
-                m_displayList.removeChild(ptr);
-            }
-        }
-        it2 = ++it1;
-        while (it2 != m_physicList.end()) {
-            std::shared_ptr<Bubble> ptr = *it2;
-            Bubble* bubble2 = ptr.get();
-            if (isCollideWithBubble(*bubble1, *bubble2)) {
-                this->onCollideWithBubble(bubble1, bubble2);
-            }
-            it2++;
-        }
-    }
 
-    m_physicList.remove_if([](std::shared_ptr<Bubble> bubble) -> bool {
-        return bubble->isDead();
-    });
+    while (m_clearList.size() > 0) {
+        m_displayList.removeChild(*m_clearList.front());
+        m_clearList.pop_front();
+    }
 }
 
 void World::draw(void) {
@@ -103,18 +84,17 @@ void World::initialize(void) {
     centerOrigin(m_score);
     m_score.setPosition(m_window.getSize().x / 2, m_score.getLocalBounds().height + 5);
     sf::Texture& backgroundTexture = m_textureManager.get(Textures::ID::Background);
-    std::unique_ptr<Sprite> backgroundSprite(new Sprite(backgroundTexture));
+    std::shared_ptr<Sprite> backgroundSprite(new Sprite(backgroundTexture));
     if (PostEffect::isSupported()) {
         backgroundSprite->setColor(sf::Color(40, 40, 40, 255));
     }
-    m_displayList.addChild(std::move(backgroundSprite));
-
+    m_displayList.addChild(backgroundSprite);
     m_eventDispatcher.addEventListener(sf::Event::EventType::MouseButtonPressed,
                                        m_onMousePressed);
 }
 
 void World::addBubble(void) {
-    int radius = randomRange(Bubbles::MIN_RADIUS, Bubbles::MAX_RADIUS);
+    float radius = randomRange(Bubbles::MIN_RADIUS, Bubbles::MAX_RADIUS);
     uint8_t red = randomRange(0, 255);
     uint8_t green = randomRange(0, 255);
     uint8_t blue = randomRange(0, 200);
@@ -127,85 +107,41 @@ void World::addBubble(void) {
 
     bubble->setPosition(random, -5 * radius);
     bubble->setVelocity(0, Bubbles::getSpeed(radius));
-    m_physicList.push_back(bubble);
+    m_collisionManager.add(bubble.get());
     m_displayList.addChild(bubble);
 }
 
 void World::onMousePressed(sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Left) {
-        auto find = std::find_if(m_physicList.begin(), m_physicList.end(),
-                                 [&] (std::shared_ptr<Bubble>& bubble) {
+        DisplayObject& parent = m_displayList;
+        for (size_t index = 0; index < parent.numChildren(); index++) {
+            DisplayObject* child = parent.getChildAt(index);
+            Bubble* bubble = dynamic_cast<Bubble*>(child);
+            if (bubble) {
                 sf::FloatRect rect = bubble->getGlobalBounds();
                 if (rect.contains(sf::Vector2f(event.mouseButton.x,
                                                event.mouseButton.y))) {
-                    m_displayList.removeChild(bubble);
-                    bubble->setDead(true);
+                    m_collisionManager.remove(bubble);
+                    m_clearList.push_back(bubble);
                     m_scoreCount += Bubbles::getScore(bubble->getRadius());
                     m_score.setString("SCORE: " + std::to_string(m_scoreCount));
                     m_particleSystem->setPosition(event.mouseButton.x,
                                                  event.mouseButton.y);
                     m_particleSystem->setColor(bubble->getColor());
                     m_particleSystem->populate(bubble->getRadius());
-                    return true;
                 }
-                return false;
-            });
-        if (find != m_physicList.end()) {
-            m_physicList.erase(find);
+            }
         }
     }
 }
 
-void World::onCollideWithWall(Bubble* entity, const sf::FloatRect& area) {
-    sf::Vector2f position = entity->getPosition();
-    sf::Vector2f velocity = entity->getVelocity();
-    if (position.x + entity->getRadius() > area.width) {
-        velocity.x = -velocity.x;
-        position.x = area.width - entity->getRadius();
-    } else if (position.x - entity->getRadius() < area.left) {
-        velocity.x = -velocity.x;
-        position.x = entity->getRadius();
+void World::onCollideWithWall(Bubble *entity, Direction::ID dir) {
+    if (Direction::ID::Bottom == dir) {
+        m_collisionManager.remove(entity);
+        m_clearList.push_back(entity);
     }
-    if (position.y + entity->getRadius() > area.height) {
-        entity->setDead(true);
-    } else if (position.y - entity->getRadius() < area.top) {
-        velocity.y = -velocity.y;
-        position.y = entity->getRadius();
-    }
-    entity->setPosition(position);
-    entity->setVelocity(velocity);
 }
 
-void World::onCollideWithBubble(Bubble* entity1, Bubble* entity2) {
-    sf::Vector2f delta = entity1->getPosition() - entity2->getPosition();
-    float dist = length(delta);
-    if (dist < entity1->getRadius() + entity2->getRadius()) {
-        float angle = atan2(delta.y, delta.x);
-        float sinf = sin(angle);
-        float cosf = cos(angle);
-        sf::Vector2f pos1(0.f, 0.f);
-        sf::Vector2f pos2(rotate(delta.x, delta.y, sinf, cosf, true));
-        sf::Vector2f vel1(rotate(entity1->getVelocity().x,
-                                 entity1->getVelocity().y, sinf, cosf, true));
-        sf::Vector2f vel2(rotate(entity2->getVelocity().x,
-                                 entity2->getVelocity().y, sinf, cosf, true));
+void World::onCollideWithEntity(Bubble *entity1, Entity *entity2) {
 
-        float total = vel1.x - vel2.x;
-        vel1.x = vel2.x;
-        vel2.x = total + vel1.x;
-        float absolute = fabs(vel1.x) + fabs(vel2.x);
-        float overlap = (entity1->getRadius() + entity2->getRadius()) - fabs(pos1.x - pos2.x);
-        pos1.x += vel1.x / absolute * overlap;
-
-        sf::Vector2f pos1F = rotate(pos1.x, pos1.y, sinf, cosf, false);
-
-        entity1->setPosition(entity1->getPosition().x + pos1F.x,
-                            entity1->getPosition().y + pos1F.y);
-
-        sf::Vector2f vel1F = rotate(vel1.x, vel1.y, sinf, cosf, false);
-        sf::Vector2f vel2F = rotate(vel2.x, vel2.y, sinf, cosf, false);
-
-        entity1->setVelocity(vel1F.x, vel1F.y);
-        entity2->setVelocity(vel2F.x, vel2F.y);
-    }
 }

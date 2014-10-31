@@ -22,6 +22,6 @@ endif()
 
 #link_directories("/usr/local/lib")
 
-add_subdirectory(bubbles-invaders)
+add_subdirectory(bubbles-fall)
 add_subdirectory(SFML)
 

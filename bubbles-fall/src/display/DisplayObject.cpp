@@ -28,10 +28,14 @@ DisplayObject::Ptr DisplayObject::removeChild(const DisplayObject &child) {
     return result;
 }
 
-DisplayObject::Ptr& DisplayObject::getChildAt(int index) {
+DisplayObject* DisplayObject::getChildAt(int index) {
     Ptr& child = m_children[index];
     assert(child != nullptr);
-    return child;
+    return child.get();
+}
+
+size_t DisplayObject::numChildren(void) {
+    return m_children.size();
 }
 
 void DisplayObject::update(sf::Time dt) {

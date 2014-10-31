@@ -13,7 +13,6 @@ Sprite::Sprite(const sf::Texture &texture)
 
 }
 
-
 Sprite::Sprite(const sf::Texture &texture, const sf::IntRect &rectangle)
     : DisplayObject()
     , m_sprite(texture, rectangle) {

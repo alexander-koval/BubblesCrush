@@ -1,13 +1,9 @@
 #include "Application.h"
-#include "SFML/Window/Event.hpp"
-#include "SFML/Window/ContextSettings.hpp"
 #include "SFML/System/Sleep.hpp"
 #include "GameScreen.h"
 #include "MenuScreen.h"
-#include "Screen.h"
-#include <iostream>
 
-const size_t Application::s_FPS = 60;
+unsigned int Application::s_FPS = 60;
 const sf::Time Application::s_timePerFrame = sf::seconds(1.0f / s_FPS);
 
 Application::Application()

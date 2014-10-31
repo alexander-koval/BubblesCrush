@@ -30,9 +30,9 @@ include_directories(
     include/particles
 )
 
-add_executable(bubbles-invaders ${bubbles_invaders_source-files})
+add_executable(bubbles-fall ${bubbles_invaders_source-files})
 
-target_link_libraries(bubbles-invaders
+target_link_libraries(bubbles-fall
    sfml-system
    sfml-window
    sfml-graphics

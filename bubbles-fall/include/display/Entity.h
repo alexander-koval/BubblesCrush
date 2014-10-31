@@ -2,9 +2,8 @@
 #define ENTITY_H
 
 #include "DisplayObject.h"
-#include "Physical.h"
 
-class Entity : public DisplayObject, public Physical {
+class Entity : public DisplayObject {
 public:
     explicit Entity(void);
 
@@ -13,8 +12,6 @@ public:
     void setVelocity(float vx, float vy);
 
     sf::Vector2f getVelocity(void) const;
-
-    virtual void collide(Physical &target1, Physical &target2) {}
 
     virtual bool isDead(void) const;
 

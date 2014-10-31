@@ -24,7 +24,7 @@ private:
     void registerScreens(void);
 
 private:
-    static const size_t s_FPS;
+    static unsigned int s_FPS;
     static const sf::Time s_timePerFrame;
     EventDispatcher m_eventDispatcher;
     sf::RenderWindow m_window;

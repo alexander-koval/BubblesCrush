@@ -1,6 +1,5 @@
 #include "ScreenManager.h"
 #include <iostream>
-#include <cassert>
 
 ScreenManager::ScreenManager(Screen::Context context)
     : m_current(Screens::ID::None)
@@ -27,6 +26,7 @@ void ScreenManager::setScreen(Screens::ID screenID) {
         m_current = screenID;
         Screen::Ptr& screen = m_screens[m_current];
         screen->enter();
+        return;
     }
     if (m_current == screenID) {
         std::cout << "this object is already in the " << (uint32_t)screenID << " screen." << std::endl;

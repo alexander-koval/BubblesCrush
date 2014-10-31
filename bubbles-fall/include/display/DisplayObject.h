@@ -20,13 +20,15 @@ public:
 
     Ptr removeChild(const DisplayObject& child);
 
-    Ptr& getChildAt(int index);
-
     void update(sf::Time dt);
 
     void removeFromParent(void);
 
     DisplayObject* getParent(void);
+
+    DisplayObject* getChildAt(int index);
+
+    size_t numChildren(void);
 
     sf::Vector2f getWorldPosition() const;
 
