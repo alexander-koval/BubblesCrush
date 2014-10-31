@@ -20,7 +20,7 @@ public:
 
     Ptr removeChild(const DisplayObject& child);
 
-    void update(sf::Time dt);
+    virtual void update(sf::Time dt);
 
     void removeFromParent(void);
 

@@ -6,7 +6,6 @@ ParticleSystem::ParticleSystem(sf::Vector2u size)
     : m_speed(100.0f)
     , m_color(sf::Color(sf::Color::White))
     , m_texture(nullptr)
-    , m_shape(Shape::CIRCLE)
     , m_lifetime(sf::seconds(1.f))
     , m_size(size)
     , m_particleSize(1.f, 1.f)  {
@@ -50,4 +49,8 @@ void ParticleSystem::update(sf::Time dt) {
     while ((!m_particles.empty()) && (m_particles.front()->lifetime <= sf::Time::Zero)) {
         m_particles.pop_front();
     }
+}
+
+void ParticleSystem::reset(void) {
+    m_particles.clear();
 }

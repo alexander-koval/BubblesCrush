@@ -14,13 +14,6 @@
 #include "SFML/Graphics/Transformable.hpp"
 #include "SFML/Graphics/PrimitiveType.hpp"
 
-namespace Shape { enum { CIRCLE, SQUARE }; }
-
-struct Config {
-    sf::Time lifetime;
-    sf::Vector2f velocity;
-};
-
 struct Particle : public sf::Drawable {
     void update(sf::Time dt) {
         sf::Vector2f half = sf::Vector2f(size.x / 2.f,
@@ -73,11 +66,11 @@ public:
 
     virtual void update(sf::Time dt);
 
+    virtual void reset(void);
+
     void setCanvasSize(sf::Vector2u size) { m_size = size; }
 
     void setParticleSize(sf::Vector2u size) { m_particleSize = size; }
-
-    void setDistribution(void) { m_shape = (m_shape + 1) % 2; }
 
     void setParticleSpeed(float speed) { m_speed = speed; }
 
@@ -86,8 +79,6 @@ public:
     void setPosition(sf::Vector2f position) { m_startPos = position; }
 
     void setColor(sf::Color color) { m_color = color; }
-
-    void setShape(sf::Uint8 shape) { m_shape = shape; }
 
     void setTexture(sf::Texture* texture) { m_texture = texture; }
 
@@ -104,12 +95,10 @@ protected:
     float m_speed;
     sf::Color m_color;
     sf::Texture* m_texture;
-    sf::Uint8 m_shape;
     sf::Time m_lifetime;
     sf::Vector2f m_startPos;
     sf::Vector2u m_size;
     sf::Vector2u m_particleSize;
-    sf::VertexArray m_vertices;
     std::deque<Ptr> m_particles;
 };
 

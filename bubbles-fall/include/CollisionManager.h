@@ -32,6 +32,8 @@ public:
 
     void remove(Bubble* entity);
 
+    void clear(void);
+
     void setCollisionListener(CollisionListener* listener);
 
 private:
@@ -43,7 +45,6 @@ private:
     sf::FloatRect m_borders;
     CollisionListener* m_listener;
     std::list<Bubble*> m_physicList;
-    std::list<sf::Vector2f> m_points;
 };
 
 #endif // COLLISIONMANAGER_H

@@ -11,12 +11,11 @@
 sf::FloatRect worldArea;
 
 World::World(Screen::Context &context)
-    : m_score()
+    : DisplayObject()
+    , m_score()
     , m_worldView(context.m_window.getDefaultView())
     , m_scoreCount(0)
-    , m_displayList()
     , m_window(context.m_window)
-    , m_sceneTexture()
     , m_fontManager(context.m_fontManager)
     , m_textureManager(context.m_textureManager)
     , m_eventDispatcher(context.m_eventDispatcher)
@@ -25,7 +24,6 @@ World::World(Screen::Context &context)
     , m_particleSystem(std::unique_ptr<ParticleSystem>(
                            new ParticleExplosion(m_window.getSize()))) {
     float radius = Bubbles::MAX_RADIUS;
-    m_sceneTexture.create(m_window.getSize().x, m_window.getSize().y);
     worldArea = sf::FloatRect(0, -radius * 6, m_worldView.getSize().x,
                               m_worldView.getSize().y + Bubbles::MAX_RADIUS * 2);
     m_onMousePressed = [this] (sf::Event& event) {
@@ -33,44 +31,47 @@ World::World(Screen::Context &context)
     };
     m_clock.restart();
     loadTextures();
-    initialize();
     sf::Texture& texture = m_textureManager.get(Textures::ID::Particle);
     m_particleSystem->setParticleSize(texture.getSize());
     m_particleSystem->setTexture(&texture);
     m_collisionManager.setCollisionListener(this);
 }
 
-void World::update(sf::Time dt) {
+void World::updateCurrent(sf::Time dt) {
     if (m_clock.getElapsedTime().asMilliseconds() > Bubbles::TIME) {
         m_clock.restart();
         this->addBubble();
     }
+}
 
+void World::updateChildren(sf::Time dt) {
     m_collisionManager.update(dt);
-    m_displayList.update(dt);
+    DisplayObject::updateChildren(dt);
     m_particleSystem->update(dt);
 
     while (m_clearList.size() > 0) {
-        m_displayList.removeChild(*m_clearList.front());
+        this->removeChild(*m_clearList.front());
         m_clearList.pop_front();
     }
 }
 
-void World::draw(void) {
-    if (PostEffect::isSupported()) {
-        m_sceneTexture.clear(sf::Color::Transparent);
-        m_sceneTexture.setView(m_worldView);
-        m_sceneTexture.draw(m_displayList);
-        m_sceneTexture.draw(*m_particleSystem);
-        m_sceneTexture.draw(m_score);
-        m_sceneTexture.display();
-        m_bloomEffect.apply(m_sceneTexture, m_window);
-    } else {
-        m_window.setView(m_worldView);
-        m_window.draw(m_displayList);
-        m_window.draw(*m_particleSystem);
-        m_window.draw(m_score);
+void World::drawChildren(sf::RenderTarget &target, sf::RenderStates states) const {
+    DisplayObject::drawChildren(target, states);
+    target.draw(*m_particleSystem);
+    target.draw(m_score);
+}
+
+void World::clear(void) {
+    m_clearList.clear();
+    std::cout << m_clearList.size() << std::endl;
+    m_collisionManager.clear();
+    while (this->numChildren() > 0) {
+        DisplayObject* child = this->getChildAt(0);
+        this->removeChild(*child);
     }
+    m_particleSystem->reset();
+    m_eventDispatcher.removeEventListener(sf::Event::EventType::MouseButtonPressed,
+                                       m_onMousePressed);
 }
 
 void World::loadTextures(void) {
@@ -88,7 +89,7 @@ void World::initialize(void) {
     if (PostEffect::isSupported()) {
         backgroundSprite->setColor(sf::Color(40, 40, 40, 255));
     }
-    m_displayList.addChild(backgroundSprite);
+    this->addChild(backgroundSprite);
     m_eventDispatcher.addEventListener(sf::Event::EventType::MouseButtonPressed,
                                        m_onMousePressed);
 }
@@ -108,12 +109,12 @@ void World::addBubble(void) {
     bubble->setPosition(random, -5 * radius);
     bubble->setVelocity(0, Bubbles::getSpeed(radius));
     m_collisionManager.add(bubble.get());
-    m_displayList.addChild(bubble);
+    this->addChild(bubble);
 }
 
 void World::onMousePressed(sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Left) {
-        DisplayObject& parent = m_displayList;
+        DisplayObject& parent = *this;
         for (size_t index = 0; index < parent.numChildren(); index++) {
             DisplayObject* child = parent.getChildAt(index);
             Bubble* bubble = dynamic_cast<Bubble*>(child);

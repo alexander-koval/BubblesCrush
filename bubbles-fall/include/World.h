@@ -21,17 +21,22 @@
 namespace sf {
 class Event;
 }
-class World : public CollisionListener {
+class World : public DisplayObject, public CollisionListener {
 public:
     explicit World(Screen::Context& context);
 
-    void update(sf::Time dt);
+    virtual void updateCurrent(sf::Time dt);
 
-    void draw(void);
+    virtual void updateChildren(sf::Time dt);
+
+    virtual void drawChildren(sf::RenderTarget &target, sf::RenderStates states) const;
+
+    void initialize(void);
+
+    void clear(void);
 
 private:
     void loadTextures(void);
-    void initialize(void);
     void addBubble(void);
     void onMousePressed(sf::Event& event);
     virtual void onCollideWithWall(Bubble* entity, Direction::ID dir);
@@ -42,10 +47,7 @@ private:
     sf::Clock m_clock;
     sf::View m_worldView;
     sf::Uint64 m_scoreCount;
-    BloomEffect m_bloomEffect;
-    DisplayObject m_displayList;
     sf::RenderWindow& m_window;
-    sf::RenderTexture m_sceneTexture;
     FontManager& m_fontManager;
     TextureManager& m_textureManager;
     EventDispatcher& m_eventDispatcher;

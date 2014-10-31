@@ -41,6 +41,10 @@ void CollisionManager::remove(Bubble* entity) {
     entity->setDead(true);
 }
 
+void CollisionManager::clear(void) {
+    m_physicList.clear();
+}
+
 void CollisionManager::collideWithWall(Bubble *entity, const sf::FloatRect &area) {
     sf::Vector2f position = entity->getPosition();
     sf::Vector2f velocity = entity->getVelocity();
