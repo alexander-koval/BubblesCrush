@@ -5,9 +5,9 @@ namespace Bubbles {
     const int TIME = 500;
 
     const float MIN_RADIUS = 20;
-    const float MAX_RADIUS = 50;
+    const float MAX_RADIUS = 60;
 
-    const float MIN_SPEED = 50;
+    const float MIN_SPEED = 80;
     const float MAX_SPEED = 400;
 
     const float MIN_POINTS = 10;

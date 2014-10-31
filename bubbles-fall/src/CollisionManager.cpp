@@ -3,6 +3,13 @@
 #include "Utils.h"
 #include <iostream>
 
+CollisionManager::CollisionManager()
+    : sf::NonCopyable()
+    , m_borders()
+    , m_listener(nullptr) {
+
+}
+
 CollisionManager::CollisionManager(sf::FloatRect borders)
     : sf::NonCopyable()
     , m_borders(borders)
@@ -71,7 +78,7 @@ void CollisionManager::collideWithWall(Bubble *entity, const sf::FloatRect &area
 }
 
 void CollisionManager::collideWithBubble(Bubble *entity1, Bubble *entity2) {
-    sf::Vector2f delta = entity1->getPosition() - entity2->getPosition();
+    sf::Vector2f delta = entity2->getPosition() - entity1->getPosition();
     float dist = length(delta);
     if (dist < entity1->getRadius() + entity2->getRadius()) {
         float angle = atan2(delta.y, delta.x);
@@ -90,11 +97,16 @@ void CollisionManager::collideWithBubble(Bubble *entity1, Bubble *entity2) {
         float absolute = fabs(vel1.x) + fabs(vel2.x);
         float overlap = (entity1->getRadius() + entity2->getRadius()) - fabs(pos1.x - pos2.x);
         pos1.x += vel1.x / absolute * overlap;
+        pos2.x += vel2.x / absolute * overlap;
 
         sf::Vector2f pos1F = rotate(pos1.x, pos1.y, sinf, cosf, false);
+        sf::Vector2f pos2F = rotate(pos2.x, pos2.y, sinf, cosf, false);
+
+        entity2->setPosition(entity1->getPosition().x + pos2F.x,
+                             entity1->getPosition().y + pos2F.y);
 
         entity1->setPosition(entity1->getPosition().x + pos1F.x,
-                            entity1->getPosition().y + pos1F.y);
+                             entity1->getPosition().y + pos1F.y);
 
         sf::Vector2f vel1F = rotate(vel1.x, vel1.y, sinf, cosf, false);
         sf::Vector2f vel2F = rotate(vel2.x, vel2.y, sinf, cosf, false);
@@ -102,6 +114,10 @@ void CollisionManager::collideWithBubble(Bubble *entity1, Bubble *entity2) {
         entity1->setVelocity(vel1F.x, vel1F.y);
         entity2->setVelocity(vel2F.x, vel2F.y);
     }
+}
+
+void CollisionManager::setBorders(sf::FloatRect borders) {
+    m_borders = borders;
 }
 
 void CollisionManager::setCollisionListener(CollisionListener *listener) {

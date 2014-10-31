@@ -24,6 +24,8 @@ public:
 
 class CollisionManager : sf::NonCopyable {
 public:
+    CollisionManager(void);
+
     explicit CollisionManager(sf::FloatRect borders);
 
     void update(sf::Time dt);
@@ -33,6 +35,8 @@ public:
     void remove(Bubble* entity);
 
     void clear(void);
+
+    void setBorders(sf::FloatRect borders);
 
     void setCollisionListener(CollisionListener* listener);
 

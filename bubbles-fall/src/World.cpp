@@ -8,7 +8,7 @@
 #include "ParticleSystems.h"
 #include "BubblesConfig.h"
 
-sf::FloatRect worldArea;
+sf::FloatRect worldBorders;
 
 World::World(Screen::Context &context)
     : DisplayObject()
@@ -19,18 +19,17 @@ World::World(Screen::Context &context)
     , m_fontManager(context.m_fontManager)
     , m_textureManager(context.m_textureManager)
     , m_eventDispatcher(context.m_eventDispatcher)
-    , m_collisionManager(sf::FloatRect(0, -Bubbles::MAX_RADIUS * 6, m_worldView.getSize().x,
-                                       m_worldView.getSize().y + Bubbles::MAX_RADIUS * 2))
+    , m_collisionManager()
     , m_particleSystem(std::unique_ptr<ParticleSystem>(
                            new ParticleExplosion(m_window.getSize()))) {
-    float radius = Bubbles::MAX_RADIUS;
-    worldArea = sf::FloatRect(0, -radius * 6, m_worldView.getSize().x,
-                              m_worldView.getSize().y + Bubbles::MAX_RADIUS * 2);
     m_onMousePressed = [this] (sf::Event& event) {
         this->onMousePressed(event);
     };
     m_clock.restart();
     loadTextures();
+    worldBorders = sf::FloatRect(0, -Bubbles::MAX_RADIUS * 5, m_worldView.getSize().x,
+                                 m_worldView.getSize().y + Bubbles::MAX_RADIUS * 2);
+    m_collisionManager.setBorders(worldBorders);
     sf::Texture& texture = m_textureManager.get(Textures::ID::Particle);
     m_particleSystem->setParticleSize(texture.getSize());
     m_particleSystem->setTexture(&texture);
@@ -106,7 +105,7 @@ void World::addBubble(void) {
     int random = randomRange(0, static_cast<int>(m_worldView.getSize().x -
                                                  radius * 2));
 
-    bubble->setPosition(random, -5 * radius);
+    bubble->setPosition(random, worldBorders.top + bubble->getRadius());
     bubble->setVelocity(0, Bubbles::getSpeed(radius));
     m_collisionManager.add(bubble.get());
     this->addChild(bubble);
