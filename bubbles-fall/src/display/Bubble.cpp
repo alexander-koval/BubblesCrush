@@ -1,6 +1,5 @@
 #include "Bubble.h"
 #include "Utils.h"
-#include "CollisionUtils.h"
 #include "SFML/Graphics/RenderTarget.hpp"
 
 Bubble::Bubble(float radius, sf::Color color)

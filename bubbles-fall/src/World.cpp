@@ -3,7 +3,6 @@
 #include "Utils.h"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Window/Mouse.hpp"
-#include "CollisionUtils.h"
 #include "EventDispatcher.h"
 #include "ParticleSystems.h"
 #include "BubblesConfig.h"

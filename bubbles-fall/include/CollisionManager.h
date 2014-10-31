@@ -45,6 +45,12 @@ private:
 
     void collideWithBubble(Bubble* entity1, Bubble* entity2);
 
+    bool isCollideWithBubble(Bubble& entity1, Bubble& entity2);
+
+    bool isCollideWithWall(Bubble& entity, const sf::FloatRect& area);
+
+    sf::Vector2f rotate(float x, float y, float sin, float cos, bool reverse);
+
 private:
     sf::FloatRect m_borders;
     CollisionListener* m_listener;
