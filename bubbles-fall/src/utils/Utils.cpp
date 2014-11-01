@@ -6,6 +6,8 @@
 #include <cassert>
 #include <ctime>
 
+std::default_random_engine eng((std::random_device())());
+
 void centerOrigin(sf::Shape& shape) {
     sf::FloatRect bounds = shape.getLocalBounds();
     shape.setOrigin(std::floor(bounds.width / 2.f), std::floor(bounds.height / 2.f));
@@ -30,17 +32,13 @@ float deg2rad(float degree) {
 }
 
 float randomRange(float min, float max) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::uniform_real_distribution<> distr(min, max);
-    return distr(gen);
+    return distr(eng);
 }
 
 int randomRange(int min, int max) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::uniform_int_distribution<> distr(min, max);
-    return distr(gen);
+    return distr(eng);
 }
 
 float length(sf::Vector2f vector) {

@@ -32,12 +32,16 @@ include_directories(
 
 if(ANDROID)
 add_library(bubbles-fall SHARED ${bubbles_invaders_source-files})
-else(ANDOIR)
+elseif(WIN32)
+add_executable(bubbles-fall WIN32 ${bubbles_invaders_source-files})
+else()
 add_executable(bubbles-fall ${bubbles_invaders_source-files})
-endif(ANDROID)
+endif()
 
 target_link_libraries(bubbles-fall
-   sfml-system
-   sfml-window
-   sfml-graphics
+    sfml-main-d
+    sfml-system-d
+    sfml-window-d
+    sfml-graphics-d
+    winpthread-1
 )

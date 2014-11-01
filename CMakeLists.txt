@@ -12,8 +12,22 @@ else(DEBUG_MODE)
     set(CMAKE_BUILD_TYPE Release)
 endif(DEBUG_MODE)
 
+set(SFML_STATIC TRUE)
+
+set(MINGW_ROOT c:/Qt/Tools/mingw482_32)
+
+set(MINGW_RUNTIME_FILES
+    ${MINGW_ROOT}/bin/libgcc_s_dw2-1.dll
+    ${MINGW_ROOT}/bin/libwinpthread-1.dll
+    ${MINGW_ROOT}/bin/libstdc++-6.dll
+)
+
 include_directories(
     SFML/include
+)
+
+link_directories(
+    ${CMAKE_BINARY_DIR}/SFML/lib
 )
 
 if(MINGW)
@@ -26,7 +40,7 @@ if(NOT MSVC)
     add_definitions(-std=c++11)
     set(CMAKE_C_FLAGS_DEBUG "-g -Wall")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-    set(CMAKE_C_FLAGS "-std=c99 -fno-stack-protector")
+    set(CMAKE_C_FLAGS "-std=c99")
 endif()
 
 add_subdirectory(bubbles-fall)
