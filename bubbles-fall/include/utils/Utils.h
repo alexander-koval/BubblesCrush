@@ -2,6 +2,8 @@
 #define UTILS_H
 
 #include "SFML/System/Vector2.hpp"
+#include <string>
+#include <sstream>
 
 namespace sf {
 class Text;
@@ -26,6 +28,14 @@ int randomRange(int min, int max);
 float length(sf::Vector2f vector);
 
 sf::Vector2f unitVector(sf::Vector2f vector);
+
+template <typename T>
+std::string to_string(T value) {
+    std::ostringstream os ;
+    os << value ;
+    return os.str() ;
+}
+
 
 
 #endif // UTILS_H

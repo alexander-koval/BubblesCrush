@@ -123,7 +123,7 @@ void World::onMousePressed(sf::Event &event) {
                     m_collisionManager.remove(bubble);
                     m_clearList.push_back(bubble);
                     m_scoreCount += Bubbles::getScore(bubble->getRadius());
-                    m_score.setString("SCORE: " + std::to_string(m_scoreCount));
+                    m_score.setString("SCORE: " + to_string(m_scoreCount));
                     m_particleSystem->setPosition(event.mouseButton.x,
                                                  event.mouseButton.y);
                     m_particleSystem->setColor(bubble->getColor());

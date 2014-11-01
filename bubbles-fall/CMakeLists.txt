@@ -30,7 +30,11 @@ include_directories(
     include/particles
 )
 
+if(ANDROID)
+add_library(bubbles-fall SHARED ${bubbles_invaders_source-files})
+else(ANDOIR)
 add_executable(bubbles-fall ${bubbles_invaders_source-files})
+endif(ANDROID)
 
 target_link_libraries(bubbles-fall
    sfml-system

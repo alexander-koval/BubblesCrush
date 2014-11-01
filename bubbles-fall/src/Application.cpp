@@ -2,6 +2,7 @@
 #include "SFML/System/Sleep.hpp"
 #include "GameScreen.h"
 #include "MenuScreen.h"
+#include "Utils.h"
 
 unsigned int Application::s_FPS = 60;
 const sf::Time Application::s_timePerFrame = sf::seconds(1.0f / s_FPS);
@@ -81,7 +82,7 @@ void Application::updateStatistics(sf::Time dt) {
     m_statsTime += dt;
     m_statsFPS += 1;
     if (m_statsTime >= sf::seconds(1.0f)) {
-        m_stats.setString("FPS: " + std::to_string(m_statsFPS));
+        m_stats.setString("FPS: " + to_string(m_statsFPS));
 
         m_statsTime -= sf::seconds(1.0f);
         m_statsFPS = 0;
