@@ -16,6 +16,12 @@ include_directories(
     SFML/include
 )
 
+if(MINGW)
+     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static-libgcc")
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
+     set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS} -static-libgcc -s")
+     set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS} -static-libgcc -static-libstdc++ -s")
+endif()
 if(NOT MSVC)
     add_definitions(-std=c++11)
     set(CMAKE_C_FLAGS_DEBUG "-g -Wall")
