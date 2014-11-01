@@ -39,8 +39,11 @@ add_executable(bubbles-fall ${bubbles_invaders_source-files})
 endif()
 
 target_link_libraries(bubbles-fall
-#    sfml-main
     sfml-system
     sfml-window
     sfml-graphics
 )
+
+add_custom_command(TARGET bubbles-fall PRE_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    ${CMAKE_CURRENT_SOURCE_DIR}/media Media)

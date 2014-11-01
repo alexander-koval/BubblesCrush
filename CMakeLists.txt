@@ -19,19 +19,37 @@ include_directories(
     SFML/include
 )
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
+   ${PROJECT_BINARY_DIR}/bin
+   CACHE PATH
+   "Single Directory for all Libraries"
+   )
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
+   ${PROJECT_BINARY_DIR}/bin
+   CACHE PATH
+   "Single Directory for all Executables."
+   )
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
+   ${PROJECT_BINARY_DIR}/bin
+   CACHE PATH
+   "Single Directory for all static libraries."
+   )
+
 link_directories(
-    ${CMAKE_BINARY_DIR}/SFML/lib
+    ${CMAKE_BINARY_DIR}/bin
 )
 
 if(MINGW)
     set(FREETYPE_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/SFML/extlibs/headers/libfreetype/windows)
     set(OPENAL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/SFML/extlibs/headers/AL)
     set(SNDFILE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/SFML/extlibs/headers/libsndfile/windows)
-    set(SNDFILE_LIBRARY ${CMAKE_SOURCE_DIR}/SFML/extlibs/libs-mingw/x64/libsndfile.a)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static-libgcc --disable-nls")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static-libgcc")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
     set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS} -static-libgcc -s")
     set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS} -static-libgcc -static-libstdc++ -s")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -s")
 endif()
 if(NOT MSVC)
     add_definitions(-std=c++11)
@@ -44,4 +62,3 @@ endif()
 
 add_subdirectory(bubbles-fall)
 add_subdirectory(SFML)
-

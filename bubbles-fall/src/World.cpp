@@ -27,7 +27,7 @@ World::World(Screen::Context &context)
     };
     m_clock.restart();
     loadTextures();
-    worldBorders = sf::FloatRect(0, -(Bubbles::MAX_RADIUS * 4), m_worldView.getSize().x,
+    worldBorders = sf::FloatRect(0, -(Bubbles::MAX_RADIUS), m_worldView.getSize().x,
                                  m_worldView.getSize().y + (Bubbles::MAX_RADIUS));
     m_collisionManager.setBorders(worldBorders);
     sf::Texture& texture = m_textureManager.get(Textures::ID::Particle);
