@@ -4,7 +4,6 @@
 #include "SFML/Graphics/Text.hpp"
 #include <random>
 #include <cassert>
-#include <cmath>
 #include <ctime>
 
 void centerOrigin(sf::Shape& shape) {
