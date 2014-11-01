@@ -39,9 +39,8 @@ add_executable(bubbles-fall ${bubbles_invaders_source-files})
 endif()
 
 target_link_libraries(bubbles-fall
-    sfml-main-d
-    sfml-system-d
-    sfml-window-d
-    sfml-graphics-d
-    winpthread-1
+    sfml-main
+    sfml-system
+    sfml-window
+    sfml-graphics
 )

@@ -26,8 +26,8 @@ World::World(Screen::Context &context)
     };
     m_clock.restart();
     loadTextures();
-    worldBorders = sf::FloatRect(0, -Bubbles::MAX_RADIUS, m_worldView.getSize().x,
-                                 m_worldView.getSize().y + Bubbles::MAX_RADIUS * 2);
+    worldBorders = sf::FloatRect(0, -(Bubbles::MAX_RADIUS * 4), m_worldView.getSize().x,
+                                 m_worldView.getSize().y + (Bubbles::MAX_RADIUS));
     m_collisionManager.setBorders(worldBorders);
     sf::Texture& texture = m_textureManager.get(Textures::ID::Particle);
     m_particleSystem->setParticleSize(texture.getSize());
@@ -46,7 +46,6 @@ void World::updateChildren(sf::Time dt) {
     m_collisionManager.update(dt);
     DisplayObject::updateChildren(dt);
     m_particleSystem->update(dt);
-
     while (m_clearList.size() > 0) {
         this->removeChild(*m_clearList.front());
         m_clearList.pop_front();
@@ -61,7 +60,6 @@ void World::drawChildren(sf::RenderTarget &target, sf::RenderStates states) cons
 
 void World::clear(void) {
     m_clearList.clear();
-    std::cout << m_clearList.size() << std::endl;
     m_collisionManager.clear();
     while (this->numChildren() > 0) {
         DisplayObject* child = this->getChildAt(0);
@@ -98,11 +96,10 @@ void World::addBubble(void) {
     uint8_t green = randomRange(0, 255);
     uint8_t blue = randomRange(0, 200);
     uint8_t alpha = randomRange(100, 200);
-    std::shared_ptr<Bubble> bubble(new Bubble(radius,
-                                              sf::Color(red, green, blue, alpha)));
-
     int random = randomRange(0, static_cast<int>(m_worldView.getSize().x -
                                                  radius * 2));
+    std::shared_ptr<Bubble> bubble(new Bubble(radius,
+                                              sf::Color(red, green, blue, alpha)));
     bubble->setPosition(random, worldBorders.top + bubble->getRadius());
     bubble->setVelocity(0, Bubbles::getSpeed(radius));
     m_collisionManager.add(bubble.get());

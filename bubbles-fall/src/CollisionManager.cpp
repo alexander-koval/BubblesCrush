@@ -1,5 +1,6 @@
 #include "CollisionManager.h"
 #include "Utils.h"
+#include <iostream>
 
 CollisionManager::CollisionManager()
     : sf::NonCopyable()
@@ -77,7 +78,7 @@ void CollisionManager::collideWithWall(Bubble *entity, const sf::FloatRect &area
 
 void CollisionManager::collideWithBubble(Bubble *entity1, Bubble *entity2) {
     sf::Vector2f delta = entity2->getPosition() - entity1->getPosition();
-    float dist = length(delta);
+    float dist = getLength(delta);
     if (dist < entity1->getRadius() + entity2->getRadius()) {
         float angle = atan2(delta.y, delta.x);
         float sinf = sin(angle);
@@ -91,9 +92,10 @@ void CollisionManager::collideWithBubble(Bubble *entity1, Bubble *entity2) {
 
         float total = vel1.x - vel2.x;
         vel1.x = vel2.x;
-        vel2.x = total + vel1.x;
+        vel2.x = (total + vel1.x) * 0.5;
         float absolute = fabs(vel1.x) + fabs(vel2.x);
-        float overlap = (entity1->getRadius() + entity2->getRadius()) - fabs(pos1.x - pos2.x);
+        float overlap = (entity1->getRadius() + entity2->getRadius()) -
+                fabs(pos1.x - pos2.x);
         pos1.x += vel1.x / absolute * overlap;
         pos2.x += vel2.x / absolute * overlap;
 
@@ -106,6 +108,7 @@ void CollisionManager::collideWithBubble(Bubble *entity1, Bubble *entity2) {
         entity1->setPosition(entity1->getPosition().x + pos1F.x,
                              entity1->getPosition().y + pos1F.y);
 
+        vel2.x *= 2;
         sf::Vector2f vel1F = rotate(vel1.x, vel1.y, sinf, cosf, false);
         sf::Vector2f vel2F = rotate(vel2.x, vel2.y, sinf, cosf, false);
 
@@ -116,7 +119,7 @@ void CollisionManager::collideWithBubble(Bubble *entity1, Bubble *entity2) {
 
 bool CollisionManager::isCollideWithBubble(Bubble& entity1, Bubble& entity2) {
     sf::Vector2f delta = entity1.getPosition() - entity2.getPosition();
-    float dist = length(delta);
+    float dist = getLength(delta);
     return (dist < entity1.getRadius() + entity2.getRadius());
 }
 

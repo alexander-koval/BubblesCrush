@@ -40,14 +40,14 @@ public:
 
     void setCollisionListener(CollisionListener* listener);
 
+    bool isCollideWithBubble(Bubble& entity1, Bubble& entity2);
+
+    bool isCollideWithWall(Bubble& entity, const sf::FloatRect& area);
+
 private:
     void collideWithWall(Bubble* entity, const sf::FloatRect &area);
 
     void collideWithBubble(Bubble* entity1, Bubble* entity2);
-
-    bool isCollideWithBubble(Bubble& entity1, Bubble& entity2);
-
-    bool isCollideWithWall(Bubble& entity, const sf::FloatRect& area);
 
     sf::Vector2f rotate(float x, float y, float sin, float cos, bool reverse);
 

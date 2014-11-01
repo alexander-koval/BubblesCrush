@@ -30,9 +30,15 @@ float randomRange(float min, float max);
 
 int randomRange(int min, int max);
 
-float length(sf::Vector2f vector);
+float getLength(sf::Vector2f vector);
+
+float setLength(float length, sf::Vector2f vector);
 
 sf::Vector2f unitVector(sf::Vector2f vector);
+
+bool isZero(sf::Vector2f vector);
+
+float getRadians(sf::Vector2f vector);
 
 template <typename T>
 std::string to_string(T value) {

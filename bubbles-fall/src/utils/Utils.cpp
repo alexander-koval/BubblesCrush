@@ -2,6 +2,8 @@
 #include "SFML/Graphics/Sprite.hpp"
 #include "SFML/Graphics/Shape.hpp"
 #include "SFML/Graphics/Text.hpp"
+#include <cfloat>
+#include <cstdint>
 #include <random>
 #include <cassert>
 #include <ctime>
@@ -41,11 +43,31 @@ int randomRange(int min, int max) {
     return distr(eng);
 }
 
-float length(sf::Vector2f vector) {
+bool isZero(sf::Vector2f vector) {
+    return (abs(vector.x) < FLT_EPSILON && abs(vector.y) < FLT_EPSILON);
+}
+
+float getLength(sf::Vector2f vector) {
     return std::sqrt(vector.x * vector.x + vector.y * vector.y);
+}
+
+float setLength(float length, sf::Vector2f vector) {
+    if (!isZero(vector)) {
+        float angle = getRadians(vector);
+        vector.x = length * std::cos(angle);
+        vector.y = length * std::sin(angle);
+    }
+    return length;
 }
 
 sf::Vector2f unitVector(sf::Vector2f vector) {
     assert(vector != sf::Vector2f(0.f, 0.f));
-    return vector / length(vector);
+    return vector / getLength(vector);
 }
+
+float getRadians(sf::Vector2f vector) {
+    if (isZero(vector)) return 0.f;
+    return std::atan2(vector.x, vector.y);
+}
+
+

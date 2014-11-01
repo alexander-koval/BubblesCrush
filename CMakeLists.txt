@@ -12,8 +12,6 @@ else(DEBUG_MODE)
     set(CMAKE_BUILD_TYPE Release)
 endif(DEBUG_MODE)
 
-set(SFML_STATIC TRUE)
-
 set(MINGW_ROOT c:/Qt/Tools/mingw482_32)
 
 set(MINGW_RUNTIME_FILES
@@ -29,6 +27,8 @@ include_directories(
 link_directories(
     ${CMAKE_BINARY_DIR}/SFML/lib
 )
+
+add_definitions(-DSFML_STATIC)
 
 if(MINGW)
      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static-libgcc")
