@@ -39,7 +39,7 @@ add_executable(bubbles-fall ${bubbles_invaders_source-files})
 endif()
 
 target_link_libraries(bubbles-fall
-    sfml-main
+#    sfml-main
     sfml-system
     sfml-window
     sfml-graphics

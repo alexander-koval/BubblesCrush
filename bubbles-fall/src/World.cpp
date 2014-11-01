@@ -19,6 +19,7 @@ World::World(Screen::Context &context)
     , m_textureManager(context.m_textureManager)
     , m_eventDispatcher(context.m_eventDispatcher)
     , m_collisionManager()
+    , m_spritePool(40, 40)
     , m_particleSystem(std::unique_ptr<ParticleSystem>(
                            new ParticleExplosion(m_window.getSize()))) {
     m_onMousePressed = [this] (sf::Event& event) {
@@ -47,7 +48,9 @@ void World::updateChildren(sf::Time dt) {
     DisplayObject::updateChildren(dt);
     m_particleSystem->update(dt);
     while (m_clearList.size() > 0) {
-        this->removeChild(*m_clearList.front());
+        Bubble* child = m_clearList.front();
+        std::unique_ptr<DisplayObject> bubble = this->removeChild(*child);
+        m_spritePool.setSprite(std::move(bubble));
         m_clearList.pop_front();
     }
 }
@@ -81,11 +84,11 @@ void World::initialize(void) {
     centerOrigin(m_score);
     m_score.setPosition(m_window.getSize().x / 2, m_score.getLocalBounds().height + 5);
     sf::Texture& backgroundTexture = m_textureManager.get(Textures::ID::Background);
-    std::shared_ptr<Sprite> backgroundSprite(new Sprite(backgroundTexture));
+    std::unique_ptr<Sprite> backgroundSprite(new Sprite(backgroundTexture));
     if (PostEffect::isSupported()) {
         backgroundSprite->setColor(sf::Color(40, 40, 40, 255));
     }
-    this->addChild(backgroundSprite);
+    this->addChild(std::move(backgroundSprite));
     m_eventDispatcher.addEventListener(sf::Event::EventType::MouseButtonPressed,
                                        m_onMousePressed);
 }
@@ -98,12 +101,16 @@ void World::addBubble(void) {
     uint8_t alpha = randomRange(100, 200);
     int random = randomRange(0, static_cast<int>(m_worldView.getSize().x -
                                                  radius * 2));
-    std::shared_ptr<Bubble> bubble(new Bubble(radius,
-                                              sf::Color(red, green, blue, alpha)));
+
+    std::unique_ptr<DisplayObject> ptr = m_spritePool.getSprite();
+    Bubble* bubble = static_cast<Bubble*>(ptr.get());
+    bubble->setDead(false);
+    bubble->setRadius(radius);
+    bubble->setColor(sf::Color(red, green, blue, alpha));
     bubble->setPosition(random, worldBorders.top + bubble->getRadius());
     bubble->setVelocity(0, Bubbles::getSpeed(radius));
-    m_collisionManager.add(bubble.get());
-    this->addChild(bubble);
+    m_collisionManager.add(bubble);
+    this->addChild(std::move(ptr));
 }
 
 void World::onMousePressed(sf::Event &event) {

@@ -7,6 +7,7 @@
 #include "SFML/Graphics/View.hpp"
 #include "SFML/Graphics/Texture.hpp"
 #include "SFML/Graphics/Text.hpp"
+#include "SpritePool.h"
 #include "BloomEffect.h"
 #include "DisplayObject.h"
 #include "CollisionManager.h"
@@ -52,6 +53,7 @@ private:
     TextureManager& m_textureManager;
     EventDispatcher& m_eventDispatcher;
     CollisionManager m_collisionManager;
+    SpritePool<Bubble> m_spritePool;
     std::unique_ptr<ParticleSystem> m_particleSystem;
     std::deque<Bubble*> m_clearList;
     std::function<void(sf::Event& event)> m_onMousePressed;

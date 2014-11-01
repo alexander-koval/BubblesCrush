@@ -7,11 +7,15 @@
 
 class Bubble : public Entity {
 public:
+    explicit Bubble(void);
+
     explicit Bubble(float radius, sf::Color color);
 
-    float getMaxSpeed(void) const;
+    void setRadius(float radius);
 
     float getRadius(void) const;
+
+    void setColor(const sf::Color& color);
 
     const sf::Color& getColor(void) const;
 

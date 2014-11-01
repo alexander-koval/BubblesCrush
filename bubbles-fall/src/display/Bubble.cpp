@@ -2,6 +2,12 @@
 #include "Utils.h"
 #include "SFML/Graphics/RenderTarget.hpp"
 
+Bubble::Bubble(void)
+    : Entity()
+    , m_shape(sf::CircleShape()) {
+    centerOrigin(m_shape);
+}
+
 Bubble::Bubble(float radius, sf::Color color)
     : Entity()
     , m_shape(sf::CircleShape(radius)) {
@@ -9,12 +15,17 @@ Bubble::Bubble(float radius, sf::Color color)
     m_shape.setFillColor(color);
 }
 
-float Bubble::getMaxSpeed(void) const  {
-    return 100.f;
+void Bubble::setRadius(float radius) {
+    m_shape.setRadius(radius);
+    centerOrigin(m_shape);
 }
 
 float Bubble::getRadius(void) const {
     return m_shape.getRadius();
+}
+
+void Bubble::setColor(const sf::Color& color) {
+    m_shape.setFillColor(color);
 }
 
 const sf::Color& Bubble::getColor(void) const {
