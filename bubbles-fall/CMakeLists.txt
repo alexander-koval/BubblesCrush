@@ -16,8 +16,6 @@ file(GLOB bubbles_invaders_source-files
     "src/effects/*.cpp"
     "src/particles/*.cpp"
     "src/*.cpp"
-    "media/Shaders/*.frag"
-    "media/Shaders/*.vert"
 )
 
 include_directories(
@@ -46,4 +44,5 @@ target_link_libraries(bubbles-fall
 
 add_custom_command(TARGET bubbles-fall PRE_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_directory
-                    ${CMAKE_CURRENT_SOURCE_DIR}/media Media)
+                    ${CMAKE_CURRENT_SOURCE_DIR}/media Media
+                    WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

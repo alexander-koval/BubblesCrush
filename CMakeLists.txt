@@ -13,8 +13,6 @@ else(DEBUG_MODE)
     set(CMAKE_BUILD_TYPE Release)
 endif(DEBUG_MODE)
 
-set(SFML_STATIC TRUE)
-
 include_directories(
     SFML/include
 )
