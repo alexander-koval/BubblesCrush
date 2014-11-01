@@ -46,7 +46,9 @@ void Application::run(void) {
                 m_window.close();
             }
         }
+#ifdef DEBUG_MODE
         updateStatistics(dt);
+#endif
         render();
     }
 }

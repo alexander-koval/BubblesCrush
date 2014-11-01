@@ -78,7 +78,7 @@ public:
 
     void setPosition(sf::Vector2f position) { m_startPos = position; }
 
-    void setColor(sf::Color color) { m_color = color; }
+    void setColor(const sf::Color& color) { m_color = color; }
 
     void setTexture(sf::Texture* texture) { m_texture = texture; }
 

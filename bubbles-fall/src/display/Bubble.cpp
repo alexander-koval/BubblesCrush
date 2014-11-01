@@ -8,7 +8,7 @@ Bubble::Bubble(void)
     centerOrigin(m_shape);
 }
 
-Bubble::Bubble(float radius, sf::Color color)
+Bubble::Bubble(float radius, const sf::Color& color)
     : Entity()
     , m_shape(sf::CircleShape(radius)) {
     centerOrigin(m_shape);

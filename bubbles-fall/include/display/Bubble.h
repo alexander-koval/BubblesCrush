@@ -9,7 +9,7 @@ class Bubble : public Entity {
 public:
     explicit Bubble(void);
 
-    explicit Bubble(float radius, sf::Color color);
+    explicit Bubble(float radius, const sf::Color& color);
 
     void setRadius(float radius);
 

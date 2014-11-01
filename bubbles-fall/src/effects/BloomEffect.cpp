@@ -6,7 +6,6 @@ BloomEffect::BloomEffect(void)
 , m_brightnessTexture()
 , m_firstPassTextures()
 , m_secondPassTextures() {
-    m_shaderManager.load(Shaders::BrightnessPass,   "Media/Shaders/Fullpass.vert", "Media/Shaders/Brightness.frag");
     m_shaderManager.load(Shaders::DownSamplePass,   "Media/Shaders/Fullpass.vert", "Media/Shaders/DownSample.frag");
     m_shaderManager.load(Shaders::GaussianBlurPass, "Media/Shaders/Fullpass.vert", "Media/Shaders/GuassianBlur.frag");
     m_shaderManager.load(Shaders::AddPass,          "Media/Shaders/Fullpass.vert", "Media/Shaders/Add.frag");
@@ -15,9 +14,7 @@ BloomEffect::BloomEffect(void)
 void BloomEffect::apply(const sf::RenderTexture& input, sf::RenderTarget& output) {
 	prepareTextures(input.getSize());
 
-//    filterBright(input, m_brightnessTexture);
     downsample(input, m_firstPassTextures[0]);
-//    downsample(m_brightnessTexture, m_firstPassTextures[0]);
     blurMultipass(m_firstPassTextures);
 
     downsample(m_firstPassTextures[0], m_secondPassTextures[0]);
@@ -43,14 +40,6 @@ void BloomEffect::prepareTextures(sf::Vector2u size) {
         m_secondPassTextures[1].create(size.x / 4, size.y / 4);
         m_secondPassTextures[1].setSmooth(true);
 	}
-}
-
-void BloomEffect::filterBright(const sf::RenderTexture& input, sf::RenderTexture& output) {
-    sf::Shader& brightness = m_shaderManager.get(Shaders::BrightnessPass);
-
-	brightness.setParameter("source", input.getTexture());
-	applyShader(brightness, output);
-	output.display();
 }
 
 void BloomEffect::blurMultipass(RenderTextureArray& renderTextures) {

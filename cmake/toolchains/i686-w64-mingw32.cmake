@@ -12,9 +12,6 @@ SET(CMAKE_AR             "i686-w64-mingw32-ar")
 SET(CMAKE_C_LINK_EXECUTABLE "i686-w64-mingw32-ld")
 SET(CMAKE_CXX_LINK_EXECUTABLE "i686-w64-mingw32-ld")
 
-SET(CMAKE_C_FLAGS "-fno-stack-protector")
-SET(CMAKE_CXX_FLAGS "-fno-stack-protector")
-
 # Configure the behaviour of the find commands
 SET(CMAKE_FIND_ROOT_PATH "/usr/i686-w64-mingw32" "/usr/bin")
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
