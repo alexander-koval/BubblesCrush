@@ -1,8 +1,7 @@
 uniform sampler2D 	source;
 uniform vec2 		sourceSize;
 
-void main()
-{
+void main() {
 	vec2 pixelSize = vec2(1.0 / sourceSize.x, 1.0 / sourceSize.y);
 	vec2 textureCoordinates = gl_TexCoord[0].xy;
 	vec4 color = texture2D(source, textureCoordinates);

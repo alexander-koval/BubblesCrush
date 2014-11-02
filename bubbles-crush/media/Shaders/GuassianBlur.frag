@@ -1,8 +1,7 @@
 uniform sampler2D 	source;
 uniform vec2 		offsetFactor;
 
-void main()
-{
+void main() {
 	vec2 textureCoordinates = gl_TexCoord[0].xy;
 	vec4 color = vec4(0.0);
 	color += texture2D(source, textureCoordinates - 4.0 * offsetFactor) * 0.0162162162;
