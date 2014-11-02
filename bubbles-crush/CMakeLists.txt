@@ -1,4 +1,4 @@
-file(GLOB bubbles_invaders_source-files
+file(GLOB bubbles_crush_source-files
     "include/*.h"
     "include/*.inl"
     "include/screen/*.h"
@@ -28,21 +28,15 @@ include_directories(
     include/particles
 )
 
-if(ANDROID)
-add_library(bubbles-fall SHARED ${bubbles_invaders_source-files})
-elseif(WIN32)
-add_executable(bubbles-fall WIN32 ${bubbles_invaders_source-files})
-else()
-add_executable(bubbles-fall ${bubbles_invaders_source-files})
-endif()
+add_executable(bubbles-crush ${bubbles_crush_source-files})
 
-target_link_libraries(bubbles-fall
+target_link_libraries(bubbles-crush
     sfml-system
     sfml-window
     sfml-graphics
 )
 
-add_custom_command(TARGET bubbles-fall PRE_BUILD
+add_custom_command(TARGET bubbles-crush PRE_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_directory
                     ${CMAKE_CURRENT_SOURCE_DIR}/media Media
                     WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

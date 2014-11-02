@@ -1,8 +1,7 @@
 #include "CollisionManager.h"
 #include "Utils.h"
-#include <iostream>
 
-CollisionManager::CollisionManager()
+CollisionManager::CollisionManager(void)
     : sf::NonCopyable()
     , m_borders()
     , m_listener(nullptr) {

@@ -28,7 +28,8 @@ void MenuScreen::draw(void) {
 }
 
 void MenuScreen::enter(void) {
-
+    m_eventDispatcher.addEventListener(sf::Event::EventType::MouseButtonPressed,
+                                       m_onMousePressed);
 }
 
 bool MenuScreen::update(sf::Time dt) {
@@ -37,7 +38,8 @@ bool MenuScreen::update(sf::Time dt) {
 }
 
 void MenuScreen::exit(void) {
-
+    m_eventDispatcher.removeEventListener(sf::Event::EventType::MouseButtonPressed,
+                                       m_onMousePressed);
 }
 
 void MenuScreen::initialize(void) {
@@ -51,8 +53,6 @@ void MenuScreen::initialize(void) {
     std::unique_ptr<DisplayObject> backgroundSprite(new Sprite(backgroundTexture));
     m_displayList.addChild(std::move(backgroundSprite));
 
-    m_eventDispatcher.addEventListener(sf::Event::EventType::MouseButtonPressed,
-                                       m_onMousePressed);
 }
 
 void MenuScreen::onMousePressed(sf::Event &event) {

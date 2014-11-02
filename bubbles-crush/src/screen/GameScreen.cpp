@@ -50,7 +50,7 @@ void GameScreen::exit(void) {
     m_world.clear();
 }
 
-void GameScreen::initialize() {
+void GameScreen::initialize(void) {
     m_sceneTexture.create(m_window.getSize().x, m_window.getSize().y);
     m_back.setStyle(sf::Text::Style::Italic);
     m_back.setFont(m_fontManager.get(Fonts::ID::Main));

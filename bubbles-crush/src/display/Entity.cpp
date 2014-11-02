@@ -1,5 +1,4 @@
 #include "Entity.h"
-#include <cassert>
 
 Entity::Entity(void)
     : DisplayObject(),

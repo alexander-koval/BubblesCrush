@@ -9,7 +9,7 @@ const sf::Time Application::s_timePerFrame = sf::seconds(1.0f / s_FPS);
 
 Application::Application()
     : m_window(sf::VideoMode(768, 1024),
-               "Bubbles Invaders",
+               "Bubbles Crush",
                sf::Style::Close)
     , m_screenManager(Screen::Context(m_window,
                                       m_screenManager,

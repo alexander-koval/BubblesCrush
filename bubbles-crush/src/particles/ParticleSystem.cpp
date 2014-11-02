@@ -1,6 +1,5 @@
 #include "ParticleSystem.h"
 #include "Utils.h"
-#include <cmath>
 
 ParticleSystem::ParticleSystem(sf::Vector2u size)
     : m_speed(100.0f)

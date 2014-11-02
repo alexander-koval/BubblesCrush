@@ -3,12 +3,9 @@
 #include "SFML/Graphics/Shape.hpp"
 #include "SFML/Graphics/Text.hpp"
 #include <cfloat>
-#include <cstdint>
-#include <random>
 #include <cassert>
-#include <ctime>
 
-std::default_random_engine eng((std::random_device())());
+std::default_random_engine eng((std::random_device("default"))());
 
 void centerOrigin(sf::Shape& shape) {
     sf::FloatRect bounds = shape.getLocalBounds();

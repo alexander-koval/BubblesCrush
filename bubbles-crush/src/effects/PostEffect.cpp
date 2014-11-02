@@ -3,12 +3,9 @@
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/VertexArray.hpp"
 
-
-PostEffect::~PostEffect() {
-}
-
 void PostEffect::applyShader(const sf::Shader& shader, sf::RenderTarget& output) {
-	sf::Vector2f outputSize = static_cast<sf::Vector2f>(output.getSize());
+    const sf::Vector2u& size = output.getSize();
+	sf::Vector2f outputSize = sf::Vector2f(size.x, size.y);
 
 	sf::VertexArray vertices(sf::TrianglesStrip, 4);
     vertices[0] = sf::Vertex(sf::Vector2f(0, 0),            sf::Vector2f(0, 1));
@@ -23,6 +20,10 @@ void PostEffect::applyShader(const sf::Shader& shader, sf::RenderTarget& output)
 	output.draw(vertices, states);
 }
 
-bool PostEffect::isSupported() {
+bool PostEffect::isSupported(void) {
 	return sf::Shader::isAvailable();
+}
+
+PostEffect::~PostEffect(void) {
+
 }

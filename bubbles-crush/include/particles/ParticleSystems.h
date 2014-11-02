@@ -7,7 +7,7 @@ class ParticleExplosion : public ParticleSystem {
 public:
     ParticleExplosion(sf::Vector2u size);
 
-    virtual ~ParticleExplosion();
+    virtual ~ParticleExplosion(void);
 
     virtual void populate(int particles);
 };

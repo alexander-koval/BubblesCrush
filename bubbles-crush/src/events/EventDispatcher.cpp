@@ -1,5 +1,4 @@
 #include "EventDispatcher.h"
-#include <algorithm>
 #include <iostream>
 
 EventDispatcher::EventDispatcher(void) {

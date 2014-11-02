@@ -1,6 +1,7 @@
 #ifndef MENUSCREEN_H
 #define MENUSCREEN_H
 
+#include <SFML/Window/Event.hpp>
 #include "SFML/System/NonCopyable.hpp"
 #include "SFML/Graphics/View.hpp"
 #include "SFML/Graphics/Text.hpp"
