@@ -2,7 +2,8 @@
 #define COLLISIONMANAGER_H
 
 #include "SFML/System/NonCopyable.hpp"
-#include "Bubble.h"
+#include "SFML/System/Time.hpp"
+#include "SFML/Graphics/Rect.hpp"
 #include <memory>
 #include <list>
 
@@ -15,11 +16,12 @@ enum class ID {
 };
 }
 
+class Physical;
 class CollisionListener : sf::NonCopyable {
 public:
-    virtual void onCollideWithWall(Bubble* entity, Direction::ID dir) = 0;
+    virtual void onCollideWithWall(Physical* entity, Direction::ID dir) = 0;
 
-    virtual void onCollideWithEntity(Bubble* entity1, Entity* entity2) = 0;
+    virtual void onCollideWithEntity(Physical* entity1, Physical* entity2) = 0;
 };
 
 class CollisionManager : sf::NonCopyable {
@@ -30,9 +32,9 @@ public:
 
     void update(sf::Time dt);
 
-    void add(Bubble* entity);
+    void add(Physical* entity);
 
-    void remove(Bubble* entity);
+    void remove(Physical* entity);
 
     void clear(void);
 
@@ -40,21 +42,21 @@ public:
 
     void setCollisionListener(CollisionListener* listener);
 
-    bool isCollideWithBubble(Bubble& entity1, Bubble& entity2);
+    bool isCollideWithBubble(Physical& entity1, Physical& entity2);
 
-    bool isCollideWithWall(Bubble& entity, const sf::FloatRect& area);
+    bool isCollideWithWall(Physical& entity, const sf::FloatRect& area);
 
 private:
-    void collideWithWall(Bubble* entity, const sf::FloatRect &area);
+    void collideWithWall(Physical* entity, const sf::FloatRect &area);
 
-    void collideWithBubble(Bubble* entity1, Bubble* entity2);
+    void collideWithBubble(Physical* entity1, Physical* entity2);
 
     sf::Vector2f rotate(float x, float y, float sin, float cos, bool reverse);
 
 private:
     sf::FloatRect m_borders;
     CollisionListener* m_listener;
-    std::list<Bubble*> m_physicList;
+    std::list<Physical*> m_physicList;
 };
 
 #endif // COLLISIONMANAGER_H

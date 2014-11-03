@@ -35,9 +35,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
    "Single Directory for all static libraries."
    )
 
-link_directories(
-    ${CMAKE_BINARY_DIR}/bin
-)
+#link_directories(
+#    ${CMAKE_BINARY_DIR}/bin
+#)
 
 if(MINGW)
     set(FREETYPE_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/SFML/extlibs/headers/libfreetype/windows)

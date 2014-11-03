@@ -9,12 +9,14 @@ file(GLOB bubbles_crush_source-files
     "include/events/*.h"
     "include/effects/*.h"
     "include/particles/*.h"
+    "include/physics/*.h"
     "src/screen/*.cpp"
     "src/display/*.cpp"
     "src/utils/*.cpp"
     "src/events/*.cpp"
     "src/effects/*.cpp"
     "src/particles/*.cpp"
+    "src/physics/*.cpp"
     "src/*.cpp"
 )
 
@@ -26,6 +28,7 @@ include_directories(
     include/events
     include/effects
     include/particles
+    include/physics
 )
 
 add_executable(bubbles-crush ${bubbles_crush_source-files})

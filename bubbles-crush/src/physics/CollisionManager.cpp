@@ -1,4 +1,5 @@
 #include "CollisionManager.h"
+#include "Physical.h"
 #include "Utils.h"
 
 CollisionManager::CollisionManager(void)
@@ -16,16 +17,16 @@ CollisionManager::CollisionManager(sf::FloatRect borders)
 }
 
 void CollisionManager::update(sf::Time dt) {
-    std::list<Bubble*>::iterator it2;
-    std::list<Bubble*>::iterator it1 = m_physicList.begin();
+    std::list<Physical*>::iterator it2;
+    std::list<Physical*>::iterator it1 = m_physicList.begin();
     while (it1 != m_physicList.end()) {
-        Bubble* entity1 = *it1;
+        Physical* entity1 = *it1;
         if (isCollideWithWall(*entity1, m_borders)) {
             this->collideWithWall(entity1, m_borders);
         }
         it2 = ++it1;
         while (it2 != m_physicList.end()) {
-            Bubble* entity2 = *it2;
+            Physical* entity2 = *it2;
             if (isCollideWithBubble(*entity1, *entity2)) {
                 this->collideWithBubble(entity1, entity2);
                 if (m_listener) m_listener->onCollideWithEntity(entity1, entity2);
@@ -33,16 +34,16 @@ void CollisionManager::update(sf::Time dt) {
             it2++;
         }
     }
-    m_physicList.remove_if([](Bubble* bubble) -> bool {
+    m_physicList.remove_if([](Physical* bubble) -> bool {
         return bubble->isDead();
     });
 }
 
-void CollisionManager::add(Bubble* entity) {
+void CollisionManager::add(Physical* entity) {
     m_physicList.push_back(entity);
 }
 
-void CollisionManager::remove(Bubble* entity) {
+void CollisionManager::remove(Physical* entity) {
     entity->setDead(true);
 }
 
@@ -50,7 +51,7 @@ void CollisionManager::clear(void) {
     m_physicList.clear();
 }
 
-void CollisionManager::collideWithWall(Bubble *entity, const sf::FloatRect &area) {
+void CollisionManager::collideWithWall(Physical *entity, const sf::FloatRect &area) {
     sf::Vector2f position = entity->getPosition();
     sf::Vector2f velocity = entity->getVelocity();
     if (position.x + entity->getRadius() > area.width) {
@@ -75,7 +76,7 @@ void CollisionManager::collideWithWall(Bubble *entity, const sf::FloatRect &area
     entity->setVelocity(velocity);
 }
 
-void CollisionManager::collideWithBubble(Bubble *entity1, Bubble *entity2) {
+void CollisionManager::collideWithBubble(Physical *entity1, Physical *entity2) {
     sf::Vector2f delta = entity2->getPosition() - entity1->getPosition();
     float dist = getLength(delta);
     if (dist < entity1->getRadius() + entity2->getRadius()) {
@@ -116,13 +117,13 @@ void CollisionManager::collideWithBubble(Bubble *entity1, Bubble *entity2) {
     }
 }
 
-bool CollisionManager::isCollideWithBubble(Bubble& entity1, Bubble& entity2) {
+bool CollisionManager::isCollideWithBubble(Physical& entity1, Physical& entity2) {
     sf::Vector2f delta = entity1.getPosition() - entity2.getPosition();
     float dist = getLength(delta);
     return (dist < entity1.getRadius() + entity2.getRadius());
 }
 
-bool CollisionManager::isCollideWithWall(Bubble &entity, const sf::FloatRect &area) {
+bool CollisionManager::isCollideWithWall(Physical &entity, const sf::FloatRect &area) {
     sf::Vector2f position = entity.getPosition();
     return ((position.x + entity.getRadius() > area.width) ||
             (position.x - entity.getRadius() < area.left) ||

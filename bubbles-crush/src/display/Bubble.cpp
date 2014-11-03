@@ -1,49 +1,67 @@
 #include "Bubble.h"
 #include "Utils.h"
+#include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
 
 Bubble::Bubble(void)
-    : Entity()
-    , m_shape(sf::CircleShape()) {
-    centerOrigin(m_shape);
+    : Shape()
+    , m_entity()
+    , m_circleShape(nullptr) {
+    std::unique_ptr<sf::CircleShape> shape(new sf::CircleShape());
+    m_circleShape = shape.get();
+    Shape::setShape(std::move(shape));
+    centerOrigin(*m_circleShape);
+    m_entity.setGraphics(this);
 }
 
 Bubble::Bubble(float radius, const sf::Color& color)
-    : Entity()
-    , m_shape(sf::CircleShape(radius)) {
-    centerOrigin(m_shape);
-    m_shape.setFillColor(color);
+    : Shape()
+    , m_entity()
+    , m_circleShape(nullptr) {
+    std::unique_ptr<sf::CircleShape> shape(new sf::CircleShape(radius));
+    m_circleShape = shape.get();
+    centerOrigin(*m_circleShape);
+    Shape::setFillColor(color);
+    m_entity.setRadius(radius);
+    m_entity.setGraphics(this);
+}
+
+void Bubble::setVelocity(sf::Vector2f &velocity) {
+    m_entity.setVelocity(velocity);
+}
+
+void Bubble::setVelocity(float vx, float vy) {
+    m_entity.setVelocity(vx, vy);
+}
+
+const sf::Vector2f& Bubble::getVelocity(void) const {
+    return m_entity.getVelocity();
 }
 
 void Bubble::setRadius(float radius) {
-    m_shape.setRadius(radius);
-    centerOrigin(m_shape);
+    m_circleShape->setRadius(radius);
+    m_entity.setRadius(radius);
+    centerOrigin(*m_circleShape);
 }
 
 float Bubble::getRadius(void) const {
-    return m_shape.getRadius();
+    return m_circleShape->getRadius();
 }
 
-void Bubble::setColor(const sf::Color& color) {
-    m_shape.setFillColor(color);
+bool Bubble::isDead(void) const {
+    return m_entity.isDead();
 }
 
-const sf::Color& Bubble::getColor(void) const {
-    return m_shape.getFillColor();
+void Bubble::setDead(bool value) {
+    return m_entity.setDead(value);
 }
 
-sf::FloatRect Bubble::getLocalBounds(void) const {
-    return m_shape.getLocalBounds();
-}
-
-sf::FloatRect Bubble::getGlobalBounds(void) const {
-    return getTransform().transformRect(m_shape.getGlobalBounds());
+Physical& Bubble::getPhysics(void) {
+    return m_entity;
 }
 
 void Bubble::updateCurrent(sf::Time dt) {
-    Entity::updateCurrent(dt);
-}
-
-void Bubble::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const {
-    target.draw(m_shape, states);
+//    m_entity.setPosition(this->getPosition());
+    m_entity.updateCurrent(dt);
+    setPosition(m_entity.getPosition());
 }

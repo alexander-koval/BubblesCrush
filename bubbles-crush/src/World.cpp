@@ -106,10 +106,10 @@ void World::addBubble(void) {
     Bubble* bubble = static_cast<Bubble*>(ptr.get());
     bubble->setDead(false);
     bubble->setRadius(radius);
-    bubble->setColor(sf::Color(red, green, blue, alpha));
+    bubble->setFillColor(sf::Color(red, green, blue, alpha));
     bubble->setPosition(random, worldBorders.top + bubble->getRadius());
     bubble->setVelocity(0, Bubbles::getSpeed(radius));
-    m_collisionManager.add(bubble);
+    m_collisionManager.add(&bubble->getPhysics());
     this->addChild(std::move(ptr));
 }
 
@@ -123,13 +123,13 @@ void World::onMousePressed(sf::Event &event) {
                 sf::FloatRect rect = bubble->getGlobalBounds();
                 if (rect.contains(sf::Vector2f(event.mouseButton.x,
                                                event.mouseButton.y))) {
-                    m_collisionManager.remove(bubble);
+                    m_collisionManager.remove(&bubble->getPhysics());
                     m_clearList.push_back(bubble);
                     m_scoreCount += Bubbles::getScore(bubble->getRadius());
                     m_score.setString("SCORE: " + to_string(m_scoreCount));
                     m_particleSystem->setPosition(event.mouseButton.x,
                                                  event.mouseButton.y);
-                    m_particleSystem->setColor(bubble->getColor());
+                    m_particleSystem->setColor(bubble->getFillColor());
                     m_particleSystem->populate(bubble->getRadius());
                 }
             }
@@ -137,13 +137,14 @@ void World::onMousePressed(sf::Event &event) {
     }
 }
 
-void World::onCollideWithWall(Bubble *entity, Direction::ID dir) {
+void World::onCollideWithWall(Physical *entity, Direction::ID dir) {
     if (Direction::ID::Bottom == dir) {
+        Bubble* bubble = static_cast<Bubble*>(entity->getGraphics());
         m_collisionManager.remove(entity);
-        m_clearList.push_back(entity);
+        m_clearList.push_back(bubble);
     }
 }
 
-void World::onCollideWithEntity(Bubble *entity1, Entity *entity2) {
+void World::onCollideWithEntity(Physical *entity1, Physical *entity2) {
 
 }

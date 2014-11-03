@@ -40,8 +40,8 @@ private:
     void loadTextures(void);
     void addBubble(void);
     void onMousePressed(sf::Event& event);
-    virtual void onCollideWithWall(Bubble* entity, Direction::ID dir);
-    virtual void onCollideWithEntity(Bubble* entity1, Entity* entity2);
+    virtual void onCollideWithWall(Physical* entity, Direction::ID dir);
+    virtual void onCollideWithEntity(Physical* entity1, Physical* entity2);
 
 private:
     sf::Text m_score;

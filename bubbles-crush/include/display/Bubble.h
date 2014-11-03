@@ -2,33 +2,39 @@
 #define BUBBLE_H
 
 #include "Entity.h"
+#include "Shape.h"
 #include "SFML/Graphics/Color.hpp"
 #include "SFML/Graphics/CircleShape.hpp"
 
-class Bubble : public Entity {
+class Bubble : public Shape {
 public:
     explicit Bubble(void);
 
     explicit Bubble(float radius, const sf::Color& color);
 
-    void setRadius(float radius);
+    virtual void setVelocity(sf::Vector2f& velocity);
 
-    float getRadius(void) const;
+    virtual void setVelocity(float vx, float vy);
 
-    void setColor(const sf::Color& color);
+    virtual const sf::Vector2f& getVelocity(void) const;
 
-    const sf::Color& getColor(void) const;
+    virtual void setRadius(float radius);
 
-    sf::FloatRect getLocalBounds(void) const;
+    virtual float getRadius(void) const;
 
-    sf::FloatRect getGlobalBounds(void) const;
+    virtual bool isDead(void) const;
+
+    virtual void setDead(bool value);
+
+    Physical& getPhysics(void);
 
 protected:
     virtual void updateCurrent(sf::Time dt);
-    virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
+//    virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
 
 private:
-    sf::CircleShape m_shape;
+    Entity m_entity;
+    sf::CircleShape* m_circleShape;
 };
 
 
