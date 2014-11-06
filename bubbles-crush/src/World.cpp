@@ -27,8 +27,8 @@ World::World(Screen::Context &context)
     };
     m_clock.restart();
     loadTextures();
-    worldBorders = sf::FloatRect(0, -(Bubbles::MAX_RADIUS), m_worldView.getSize().x,
-                                 m_worldView.getSize().y + (Bubbles::MAX_RADIUS));
+    worldBorders = sf::FloatRect(0, -(Bubbles::MAX_RADIUS * 2), m_worldView.getSize().x,
+                                 m_worldView.getSize().y + (Bubbles::MAX_RADIUS * 2));
     m_collisionManager.setBorders(worldBorders);
     sf::Texture& texture = m_textureManager.get(Textures::ID::Particle);
     m_particleSystem->setParticleSize(texture.getSize());
@@ -101,7 +101,7 @@ void World::addBubble(void) {
     uint8_t alpha = randomRange(100, 200);
     int random = randomRange(static_cast<int>(radius),
                              static_cast<int>(m_worldView.getSize().x -
-                                                 radius * 2));
+                                                 radius));
 
     std::unique_ptr<DisplayObject> ptr = m_spritePool.getSprite();
     Bubble* bubble = static_cast<Bubble*>(ptr.get());
