@@ -26,6 +26,10 @@ public:
 
     virtual void setDead(bool value);
 
+    void sync(void) {
+        m_entity.setPosition(this->getPosition());
+    }
+
     Physical& getPhysics(void);
 
 protected:

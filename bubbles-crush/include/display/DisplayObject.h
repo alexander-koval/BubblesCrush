@@ -14,13 +14,13 @@ public:
 
     explicit DisplayObject(void);
 
-    void addChild(Ptr child);
+    virtual void addChild(Ptr child);
 
-    Ptr removeChild(const Ptr& child);
+    virtual Ptr removeChild(const Ptr& child);
 
-    Ptr removeChild(const DisplayObject& child);
+    virtual Ptr removeChild(const DisplayObject& child);
 
-    virtual void update(sf::Time dt);
+    void update(sf::Time dt);
 
     void removeFromParent(void);
 
