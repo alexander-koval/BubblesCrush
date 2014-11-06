@@ -5,7 +5,7 @@
 #include <cfloat>
 #include <cassert>
 
-std::default_random_engine eng((std::random_device("default"))());
+std::default_random_engine eng((std::random_device())());
 
 void centerOrigin(sf::Shape& shape) {
     sf::FloatRect bounds = shape.getLocalBounds();
