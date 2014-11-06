@@ -34,7 +34,7 @@ include_directories(
 if(WIN32)
     add_executable(bubbles-crush WIN32 ${bubbles_crush_source-files})
 else()
-    add_executable(bubbles-crush ${bubbles_crush_source_files})
+    add_executable(bubbles-crush ${bubbles_crush_source-files})
 endif()
 
 target_link_libraries(bubbles-crush

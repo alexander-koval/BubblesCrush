@@ -1,36 +1,52 @@
 #ifndef PHYSICAL_H
 #define PHYSICAL_H
 
+#include "SFML/System/Time.hpp"
 #include "SFML/System/Vector2.hpp"
 
 class DisplayObject;
 class Physical {
 public:
-    virtual ~Physical(void) {}
+    Physical(void);
 
-    virtual void setPosition(float x, float y) = 0;
+    ~Physical(void);
 
-    virtual void setPosition(const sf::Vector2f& position) = 0;
+    void setPosition(float x, float y);
 
-    virtual const sf::Vector2f& getPosition(void) const = 0;
+    void setPosition(const sf::Vector2f& position);
 
-    virtual void setVelocity(sf::Vector2f& velocity) = 0;
+    const sf::Vector2f& getPosition(void) const;
 
-    virtual void setVelocity(float vx, float vy) = 0;
+    void setVelocity(sf::Vector2f& velocity);
 
-    virtual const sf::Vector2f& getVelocity(void) const = 0;
+    void setVelocity(float vx, float vy);
 
-    virtual void setRadius(float radius) = 0;
+    const sf::Vector2f& getVelocity(void) const;
 
-    virtual float getRadius(void) const = 0;
+    void setRadius(float radius);
 
-    virtual bool isDead(void) const = 0;
+    float getRadius(void) const;
 
-    virtual void setDead(bool value) = 0;
+    bool isDead(void) const;
 
-    virtual void setGraphics(DisplayObject* displayObject) = 0;
+    void setDead(bool value);
 
-    virtual DisplayObject* getGraphics(void) = 0;
+    void setGraphics(DisplayObject* displayObject);
+
+    DisplayObject* getGraphics(void);
+
+    void move(float offsetX, float offsetY);
+
+    void move(const sf::Vector2f& offset);
+
+    void update(sf::Time dt);
+
+private:
+    sf::Vector2f m_velocity;
+    sf::Vector2f m_position;
+    DisplayObject* m_displayObject;
+    float m_radius;
+    bool m_isDead;
 };
 
 #endif // PHYSICAL_H

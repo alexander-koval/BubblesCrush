@@ -59,9 +59,6 @@ void Application::processInput(void) {
         if (event.type == sf::Event::Closed) {
             m_window.close();
         }
-        if (event.type == sf::Event::TouchBegan) {
-            std::cout << "TOCH" << std::endl;
-        }
         if (event.type == sf::Event::MouseButtonPressed) {
             m_eventDispatcher.dispatchEvent(event);
         }

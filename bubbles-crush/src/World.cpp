@@ -99,7 +99,8 @@ void World::addBubble(void) {
     uint8_t green = randomRange(0, 255);
     uint8_t blue = randomRange(0, 200);
     uint8_t alpha = randomRange(100, 200);
-    int random = randomRange(0, static_cast<int>(m_worldView.getSize().x -
+    int random = randomRange(static_cast<int>(radius),
+                             static_cast<int>(m_worldView.getSize().x -
                                                  radius * 2));
 
     std::unique_ptr<DisplayObject> ptr = m_spritePool.getSprite();

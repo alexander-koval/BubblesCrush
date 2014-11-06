@@ -1,8 +1,8 @@
 #ifndef BUBBLE_H
 #define BUBBLE_H
 
-#include "Entity.h"
 #include "Shape.h"
+#include "Physical.h"
 #include "SFML/Graphics/Color.hpp"
 #include "SFML/Graphics/CircleShape.hpp"
 
@@ -37,7 +37,7 @@ protected:
 //    virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
 
 private:
-    Entity m_entity;
+    Physical m_entity;
     sf::CircleShape* m_circleShape;
 };
 

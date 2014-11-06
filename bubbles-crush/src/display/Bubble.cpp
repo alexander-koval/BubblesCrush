@@ -62,6 +62,6 @@ Physical& Bubble::getPhysics(void) {
 
 void Bubble::updateCurrent(sf::Time dt) {
 //    m_entity.setPosition(this->getPosition());
-    m_entity.updateCurrent(dt);
+    m_entity.update(dt);
     setPosition(m_entity.getPosition());
 }
