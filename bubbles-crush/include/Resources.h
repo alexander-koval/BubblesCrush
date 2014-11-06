@@ -16,7 +16,6 @@ enum class ID {
 
 namespace Shaders {
 enum ID {
-//    BrightnessPass,
     DownSamplePass,
     GaussianBlurPass,
     AddPass,

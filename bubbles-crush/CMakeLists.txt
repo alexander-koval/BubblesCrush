@@ -31,7 +31,11 @@ include_directories(
     include/physics
 )
 
-add_executable(bubbles-crush ${bubbles_crush_source-files})
+if(WIN32)
+    add_executable(bubbles-crush WIN32 ${bubbles_crush_source-files})
+else()
+    add_executable(bubbles-crush ${bubbles_crush_source_files})
+endif()
 
 target_link_libraries(bubbles-crush
     sfml-system
