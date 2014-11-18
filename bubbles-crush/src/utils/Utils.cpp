@@ -4,6 +4,7 @@
 #include "SFML/Graphics/Text.hpp"
 #include <cfloat>
 #include <cassert>
+#include <random>
 
 std::default_random_engine eng((std::random_device())());
 
