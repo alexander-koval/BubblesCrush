@@ -21,6 +21,7 @@ void PostEffect::applyShader(const sf::Shader& shader, sf::RenderTarget& output)
 }
 
 bool PostEffect::isSupported(void) {
+    return false;
 	return sf::Shader::isAvailable();
 }
 
