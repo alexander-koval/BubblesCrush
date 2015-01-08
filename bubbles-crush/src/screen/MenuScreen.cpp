@@ -10,7 +10,7 @@ MenuScreen::MenuScreen(Context context)
         , m_worldView(context.m_window.getDefaultView())
         , m_title()
         , m_window(context.m_window)
-        , m_displayList()
+        , m_displayList(std::make_shared<DisplayObject>())
         , m_fontManager(context.m_fontManager)
         , m_textureManager(context.m_textureManager)
         , m_eventDispatcher(context.m_eventDispatcher)
@@ -23,7 +23,7 @@ MenuScreen::MenuScreen(Context context)
 
 void MenuScreen::draw(void) {
     m_window.setView(m_worldView);
-    m_window.draw(m_displayList);
+    m_window.draw(*m_displayList.get());
     m_window.draw(m_title);
 }
 
@@ -33,7 +33,7 @@ void MenuScreen::enter(void) {
 }
 
 bool MenuScreen::update(sf::Time dt) {
-    m_displayList.update(dt);
+    m_displayList->update(dt);
     return true;
 }
 
@@ -49,9 +49,9 @@ void MenuScreen::initialize(void) {
     m_title.setString("PLAY");
     centerOrigin(m_title);
     m_title.setPosition(m_window.getSize().x / 2, m_window.getSize().y / 2);
-    sf::Texture& backgroundTexture = m_textureManager.get(Textures::ID::Background);
-    std::unique_ptr<DisplayObject> backgroundSprite(new Sprite(backgroundTexture));
-    m_displayList.addChild(std::move(backgroundSprite));
+    sf::Texture& background_texture = m_textureManager.get(Textures::ID::Background);
+    std::shared_ptr<DisplayObject> background_sprite = std::make_shared<Sprite>(background_texture);
+    m_displayList->addChild(background_sprite);
 
 }
 

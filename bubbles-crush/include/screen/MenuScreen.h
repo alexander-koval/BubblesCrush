@@ -6,9 +6,10 @@
 #include "SFML/Graphics/View.hpp"
 #include "SFML/Graphics/Text.hpp"
 #include "ResourceManager.h"
-#include "DisplayObject.h"
 #include "Resources.h"
 #include "Screen.h"
+
+class DisplayObject;
 
 class MenuScreen : public Screen, public sf::NonCopyable {
 public:
@@ -30,7 +31,7 @@ private:
     sf::View m_worldView;
     sf::Text m_title;
     sf::RenderWindow& m_window;
-    DisplayObject m_displayList;
+    std::shared_ptr<DisplayObject> m_displayList;
     FontManager& m_fontManager;
     TextureManager& m_textureManager;
     EventDispatcher& m_eventDispatcher;

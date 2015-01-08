@@ -18,6 +18,7 @@
 #include "Bubble.h"
 #include <array>
 #include <deque>
+#include <functional>
 
 namespace sf {
 class Event;
@@ -55,7 +56,7 @@ private:
     CollisionManager m_collisionManager;
     SpritePool<Bubble> m_spritePool;
     std::unique_ptr<ParticleSystem> m_particleSystem;
-    std::deque<Bubble*> m_clearList;
+    std::deque<std::weak_ptr<Bubble>> m_clearList;
     std::function<void(sf::Event& event)> m_onMousePressed;
 };
 

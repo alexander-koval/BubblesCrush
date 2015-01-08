@@ -8,7 +8,8 @@
 template <typename Sprite>
 class SpritePool {
 public:
-    typedef std::unique_ptr<DisplayObject> Ptr;
+//    typedef std::shared_ptr<DisplayObject> Ptr;
+    using Ptr = std::shared_ptr<Sprite>;
 
     SpritePool(int size, int growth);
 
@@ -19,7 +20,7 @@ public:
 private:
     std::size_t m_growth;
     std::size_t m_counter;
-    std::vector<std::unique_ptr<DisplayObject>> m_pool;
+    std::vector<std::shared_ptr<Sprite>> m_pool;
 };
 
 
@@ -30,26 +31,28 @@ SpritePool<Sprite>::SpritePool(int size, int growth)
     , m_pool(size) {
     int index = size;
     while (--index > -1) {
-        m_pool[index] = std::unique_ptr<DisplayObject>(new Sprite());
+        std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>();
+        sprite->initialize();
+        m_pool[index] = sprite;
     }
 }
 
 template <typename Sprite>
-std::unique_ptr<DisplayObject> SpritePool<Sprite>::getSprite(void) {
+std::shared_ptr<Sprite> SpritePool<Sprite>::getSprite(void) {
     if (m_counter > 0) {
-        std::unique_ptr<DisplayObject>& result = m_pool[--m_counter];
+        Ptr& result = m_pool[--m_counter];
         return std::move(result);
     }
     int index = m_growth;
     while (--index > -1) {
-        m_pool.push_back(std::unique_ptr<Sprite>(new Sprite()));
+        m_pool.push_back(std::make_shared<Sprite>());
     }
     m_counter = m_growth;
     return getSprite();
 }
 
 template <typename Sprite>
-void SpritePool<Sprite>::setSprite(std::unique_ptr<DisplayObject> sprite) {
+void SpritePool<Sprite>::setSprite(Ptr sprite) {
     m_pool[m_counter++] = std::move(sprite);
 }
 

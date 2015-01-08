@@ -4,7 +4,6 @@
 Physical::Physical(void)
     : m_velocity(0, 0)
     , m_position(0, 0)
-    , m_displayObject(nullptr)
     , m_radius(0)
     , m_isDead(false) {
 
@@ -56,12 +55,13 @@ void Physical::setDead(bool value) {
     m_isDead = value;
 }
 
-void Physical::setGraphics(DisplayObject *displayObject) {
-    m_displayObject = displayObject;
+void Physical::setGraphics(std::weak_ptr<DisplayObject> displayObject) {
+    m_graphics = displayObject;
 }
 
-DisplayObject* Physical::getGraphics(void) {
-    return m_displayObject;
+DisplayObject::Ptr Physical::getGraphics(void) {
+    std::shared_ptr<DisplayObject> graphics = m_graphics.lock();
+    return graphics;
 }
 
 void Physical::move(const sf::Vector2f &offset) {
@@ -73,7 +73,8 @@ void Physical::move(float offsetX, float offsetY) {
 }
 
 void Physical::update(sf::Time dt) {
-    if (m_displayObject) setPosition(m_displayObject->getPosition());
+    DisplayObject::Ptr graphics = m_graphics.lock();
+    if (graphics) setPosition(graphics->getPosition());
     move(m_velocity * dt.asSeconds());
 }
 

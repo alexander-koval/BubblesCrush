@@ -28,9 +28,9 @@ private:
     static const sf::Time s_timePerFrame;
     EventDispatcher m_eventDispatcher;
     sf::RenderWindow m_window;
-    ScreenManager m_screenManager;
-    TextureManager m_textureManager;
     FontManager m_fontManager;
+    TextureManager m_textureManager;
+    ScreenManager m_screenManager;
     sf::Time m_statsTime;
     sf::Text m_stats;
     size_t m_statsFPS;

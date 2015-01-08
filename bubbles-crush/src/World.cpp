@@ -48,10 +48,13 @@ void World::updateChildren(sf::Time dt) {
     DisplayObject::updateChildren(dt);
     m_particleSystem->update(dt);
     while (m_clearList.size() > 0) {
-        Bubble* child = m_clearList.front();
-        std::unique_ptr<DisplayObject> bubble = this->removeChild(*child);
-        m_spritePool.setSprite(std::move(bubble));
-        m_clearList.pop_front();
+        std::weak_ptr<Bubble> ptr = m_clearList.front();
+        std::shared_ptr<Bubble> bubble_ptr = ptr.lock();
+        if (bubble_ptr) {
+            this->removeChild(bubble_ptr);
+            m_spritePool.setSprite(bubble_ptr);
+            m_clearList.pop_front();
+        }
     }
 }
 
@@ -65,8 +68,8 @@ void World::clear(void) {
     m_clearList.clear();
     m_collisionManager.clear();
     while (this->numChildren() > 0) {
-        DisplayObject* child = this->getChildAt(0);
-        this->removeChild(*child);
+        DisplayObject::Ptr child_ptr = this->getChildAt(0);
+        this->removeChild(child_ptr);
     }
     m_particleSystem->reset();
     m_eventDispatcher.removeEventListener(sf::Event::EventType::MouseButtonPressed,
@@ -78,6 +81,7 @@ void World::loadTextures(void) {
 }
 
 void World::initialize(void) {
+    using namespace std::placeholders;
     m_score.setStyle(sf::Text::Style::Italic);
     m_score.setFont(m_fontManager.get(Fonts::ID::Main));
     m_score.setString("SCORE: 0");
@@ -91,6 +95,7 @@ void World::initialize(void) {
     this->addChild(std::move(backgroundSprite));
     m_eventDispatcher.addEventListener(sf::Event::EventType::MouseButtonPressed,
                                        m_onMousePressed);
+//    m_eventDispatcher.addEventListener(sf::Event::EventType::MouseButtonPressed, &onMousePressed);
 }
 
 void World::addBubble(void) {
@@ -103,35 +108,35 @@ void World::addBubble(void) {
                              static_cast<int>(m_worldView.getSize().x -
                                                  radius));
 
-    std::unique_ptr<DisplayObject> ptr = m_spritePool.getSprite();
-    Bubble* bubble = static_cast<Bubble*>(ptr.get());
-    bubble->setDead(false);
-    bubble->setRadius(radius);
-    bubble->setFillColor(sf::Color(red, green, blue, alpha));
-    bubble->setPosition(random, worldBorders.top + bubble->getRadius());
-    bubble->setVelocity(0, Bubbles::getSpeed(radius));
-    m_collisionManager.add(&bubble->getPhysics());
-    this->addChild(std::move(ptr));
+    std::shared_ptr<Bubble> bubble_ptr = m_spritePool.getSprite();
+    bubble_ptr->setDead(false);
+    bubble_ptr->setRadius(radius);
+    bubble_ptr->setFillColor(sf::Color(red, green, blue, alpha));
+    bubble_ptr->setPosition(random, worldBorders.top + bubble_ptr->getRadius());
+    bubble_ptr->setVelocity(0, Bubbles::getSpeed(radius));
+    m_collisionManager.add(&bubble_ptr->getPhysics());
+    this->addChild(bubble_ptr);
 }
 
 void World::onMousePressed(sf::Event &event) {
     if (event.mouseButton.button == sf::Mouse::Left) {
-        DisplayObject& parent = *this;
-        for (size_t index = 0; index < parent.numChildren(); index++) {
-            DisplayObject* child = parent.getChildAt(index);
-            Bubble* bubble = dynamic_cast<Bubble*>(child);
-            if (bubble) {
-                sf::FloatRect rect = bubble->getGlobalBounds();
+        DisplayObject::Ptr parent = shared_from_this();
+
+        for (size_t index = 0; index < parent->numChildren(); index++) {
+            DisplayObject::Ptr child_ptr = parent->getChildAt(index);
+            std::shared_ptr<Bubble> bubble_ptr = std::dynamic_pointer_cast<Bubble>(child_ptr);
+            if (bubble_ptr) {
+                sf::FloatRect rect = bubble_ptr->getGlobalBounds();
                 if (rect.contains(sf::Vector2f(event.mouseButton.x,
                                                event.mouseButton.y))) {
-                    m_collisionManager.remove(&bubble->getPhysics());
-                    m_clearList.push_back(bubble);
-                    m_scoreCount += Bubbles::getScore(bubble->getRadius());
+                    m_collisionManager.remove(&bubble_ptr->getPhysics());
+                    m_clearList.push_back(bubble_ptr);
+                    m_scoreCount += Bubbles::getScore(bubble_ptr->getRadius());
                     m_score.setString("SCORE: " + to_string(m_scoreCount));
                     m_particleSystem->setPosition(event.mouseButton.x,
                                                  event.mouseButton.y);
-                    m_particleSystem->setColor(bubble->getFillColor());
-                    m_particleSystem->populate(bubble->getRadius());
+                    m_particleSystem->setColor(bubble_ptr->getFillColor());
+                    m_particleSystem->populate(bubble_ptr->getRadius());
                 }
             }
         }
@@ -140,9 +145,10 @@ void World::onMousePressed(sf::Event &event) {
 
 void World::onCollideWithWall(Physical *entity, Direction::ID dir) {
     if (Direction::ID::Bottom == dir) {
-        Bubble* bubble = static_cast<Bubble*>(entity->getGraphics());
+        DisplayObject::Ptr ptr = entity->getGraphics();
+        std::shared_ptr<Bubble> bubble_ptr = std::dynamic_pointer_cast<Bubble>(ptr);
         m_collisionManager.remove(entity);
-        m_clearList.push_back(bubble);
+        m_clearList.push_back(bubble_ptr);
     }
 }
 

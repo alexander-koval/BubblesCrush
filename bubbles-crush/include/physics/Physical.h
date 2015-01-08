@@ -1,6 +1,7 @@
 #ifndef PHYSICAL_H
 #define PHYSICAL_H
 
+#include <memory>
 #include "SFML/System/Time.hpp"
 #include "SFML/System/Vector2.hpp"
 
@@ -31,9 +32,9 @@ public:
 
     void setDead(bool value);
 
-    void setGraphics(DisplayObject* displayObject);
+    void setGraphics(std::weak_ptr<DisplayObject> displayObject);
 
-    DisplayObject* getGraphics(void);
+    std::shared_ptr<DisplayObject> getGraphics(void);
 
     void move(float offsetX, float offsetY);
 
@@ -44,7 +45,7 @@ public:
 private:
     sf::Vector2f m_velocity;
     sf::Vector2f m_position;
-    DisplayObject* m_displayObject;
+    std::weak_ptr<DisplayObject> m_graphics;
     float m_radius;
     bool m_isDead;
 };

@@ -8,11 +8,17 @@
 #include "SFML/Graphics/Drawable.hpp"
 #include "SFML/Graphics/Transformable.hpp"
 
-class DisplayObject : public sf::Transformable, public sf::Drawable, public sf::NonCopyable {
+class DisplayObject
+        : public sf::Transformable
+        , public sf::Drawable
+        , public sf::NonCopyable
+        , public std::enable_shared_from_this<DisplayObject> {
 public:
-    typedef std::unique_ptr<DisplayObject> Ptr;
+    using Ptr = std::shared_ptr<DisplayObject>;
 
     explicit DisplayObject(void);
+
+    virtual void initialize(void);
 
     virtual void addChild(Ptr child);
 
@@ -24,9 +30,9 @@ public:
 
     void removeFromParent(void);
 
-    DisplayObject* getParent(void);
+    Ptr getParent(void);
 
-    DisplayObject* getChildAt(int index);
+    Ptr getChildAt(int index);
 
     size_t numChildren(void);
 
@@ -46,8 +52,8 @@ protected:
     virtual void drawChildren(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
-    std::vector<Ptr> m_children;
-    DisplayObject* m_parent;
+    std::vector<std::shared_ptr<DisplayObject>> m_children;
+    std::weak_ptr<DisplayObject> m_parent;
 };
 
 #endif // DISPLAYOBJECT_H

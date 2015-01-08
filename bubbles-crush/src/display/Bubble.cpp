@@ -11,7 +11,6 @@ Bubble::Bubble(void)
     m_circleShape = shape.get();
     Shape::setShape(std::move(shape));
     centerOrigin(*m_circleShape);
-    m_entity.setGraphics(this);
 }
 
 Bubble::Bubble(float radius, const sf::Color& color)
@@ -23,7 +22,10 @@ Bubble::Bubble(float radius, const sf::Color& color)
     centerOrigin(*m_circleShape);
     Shape::setFillColor(color);
     m_entity.setRadius(radius);
-    m_entity.setGraphics(this);
+}
+
+void Bubble::initialize(void) {
+    m_entity.setGraphics(shared_from_this());
 }
 
 void Bubble::setVelocity(sf::Vector2f &velocity) {
@@ -61,7 +63,6 @@ Physical& Bubble::getPhysics(void) {
 }
 
 void Bubble::updateCurrent(sf::Time dt) {
-//    m_entity.setPosition(this->getPosition());
     m_entity.update(dt);
     setPosition(m_entity.getPosition());
 }

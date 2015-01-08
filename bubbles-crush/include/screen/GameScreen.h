@@ -29,9 +29,9 @@ private:
 
 private:
     sf::View m_worldView;
-    World m_world;
     sf::Text m_back;
     sf::RenderWindow& m_window;
+    std::shared_ptr<World> m_world;
     sf::RenderTexture m_sceneTexture;
     FontManager& m_fontManager;
     TextureManager& m_textureManager;

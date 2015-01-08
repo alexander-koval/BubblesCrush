@@ -12,6 +12,8 @@ public:
 
     explicit Bubble(float radius, const sf::Color& color);
 
+    virtual void initialize(void);
+
     virtual void setVelocity(sf::Vector2f& velocity);
 
     virtual void setVelocity(float vx, float vy);
