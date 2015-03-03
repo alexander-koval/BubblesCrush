@@ -18,6 +18,8 @@ public:
 
     explicit DisplayObject(void);
 
+    virtual ~DisplayObject(void);
+
     virtual void initialize(void);
 
     virtual void addChild(Ptr child);

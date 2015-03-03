@@ -6,6 +6,10 @@ DisplayObject::DisplayObject(void) {
 
 }
 
+DisplayObject::~DisplayObject(void) {
+
+}
+
 void DisplayObject::initialize(void) {
 
 }
