@@ -13,6 +13,7 @@ file(GLOB bubbles_crush_source-files
     "src/screen/*.cpp"
     "src/display/*.cpp"
     "src/utils/*.cpp"
+    "src/utils/*.mm"
     "src/events/*.cpp"
     "src/effects/*.cpp"
     "src/particles/*.cpp"
@@ -47,24 +48,58 @@ if(NOT MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG -std=c++11")
 endif()
 
-if(WIN32)
+if(APPLE)
+    set(BUNDLE_NAME ${PROJECT_NAME}.app)
+    set(BUNDLE_PATH "${CMAKE_INSTALL_PREFIX}/${BUNDLE_NAME}")
+    set(BINDIR ${BUNDLE_NAME}/Contents/MacOS)
+    set(LIBDIR ${BUNDLE_NAME}/Contents/Libraries)
+    set(RLIBDIR ${BUNDLE_NAME}/Contents/Frameworks)
+    set(SHAREDIR ${BUNDLE_NAME}/Contents/Resources)
+    set(PLUGINSDIR ${BUNDLE_NAME}/Contents/PlugIns)
+    set(IMPORTSDIR ${BINDIR})
+    set(BUNDLE_BINARIES ${PROJECT_NAME})
+
+    # Locate all recourses
+#    file(GLOB copy_resources ${CMAKE_CURRENT_SOURCE_DIR}/media/*.*)
+#    set_source_files_properties(
+#        ${copy_resources}
+#        PROPERTIES
+#        MACOSX_PACKAGE_LOCATION Resources
+#    )
+
+    add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${bubbles_crush_source-files} ${copy_resources})
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E make_directory
+                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${SHAREDIR})
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                        ${CMAKE_CURRENT_SOURCE_DIR}/media Media
+                        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${SHAREDIR})
+
+#    set_target_properties(${PROJECT_NAME} PROPERTIES RESOURCE ${copy_resources})
+    set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
+
+elseif(WIN32)
     message(WIN32)
-    add_executable(bubbles-crush WIN32 ${bubbles_crush_source-files})
+    add_executable(${PROJECT_NAME} WIN32 ${bubbles_crush_source-files})
 elseif(ANDROID)
     message(ANDROID)
-    add_library(bubbles-crush SHARED ${bubbles_crush_source-files})
+    add_library(${PROJECT_NAME} SHARED ${bubbles_crush_source-files})
 else()
     message(LINUX)
-    add_executable(bubbles-crush ${bubbles_crush_source-files})
+    add_executable(${PROJECT_NAME} ${bubbles_crush_source-files})
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                        ${CMAKE_CURRENT_SOURCE_DIR}/media Media
+                        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
-target_link_libraries(bubbles-crush
+target_link_libraries(${PROJECT_NAME}
     sfml-system
     sfml-window
     sfml-graphics
 )
 
-add_custom_command(TARGET bubbles-crush PRE_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                    ${CMAKE_CURRENT_SOURCE_DIR}/media Media
-                    WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

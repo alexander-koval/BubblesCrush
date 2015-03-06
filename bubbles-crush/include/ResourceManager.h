@@ -6,11 +6,16 @@
 #include <memory>
 #include <stdexcept>
 #include <cassert>
+#include <ResourceDirectory.h>
 
 template <typename Resource, typename Identifier>
 class ResourceManager {
 public:
     void load(Identifier id, const std::string& filename);
+
+    void load(Identifier id, const char* filename1, const char* filename2);
+
+    void load(Identifier id, const std::string &filename1, const std::string &filename2);
 
     template <typename Parameter>
     void load(Identifier id, const std::string& filename, const Parameter& param);
