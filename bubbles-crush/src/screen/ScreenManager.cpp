@@ -1,3 +1,4 @@
+#include <cstdint>
 #include "ScreenManager.h"
 #include <iostream>
 

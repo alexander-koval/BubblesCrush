@@ -6,6 +6,12 @@ A bubble-popping game built with C++ and SFML. Features colorful bubbles, partic
 
 ## Building
 
+First, initialize the submodules:
+```bash
+git submodule update --init --recursive
+```
+
+Then build the project:
 ```bash
 mkdir build
 cd build
